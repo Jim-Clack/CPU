@@ -24,10 +24,8 @@ public class Bit {
         this.val = val != 0 ? 1 : 0;
     }
 
-    ////////////////////////////////// I/O ///////////////////////////////////
-
     @Override
     public String toString() {
-        return "" + val;
+        return "{" + val + "}";
     }
 }

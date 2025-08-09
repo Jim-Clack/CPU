@@ -106,8 +106,6 @@ public class Octet {
         return accumulator;
     }
 
-    ////////////////////////////////// I/O ///////////////////////////////////
-
     public Octet(String bits) {
         for (int i = 0; i < NumBits; i++) {
             int bitNum = MaxBitNum - i;

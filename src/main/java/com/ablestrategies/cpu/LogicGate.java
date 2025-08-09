@@ -6,21 +6,21 @@ public enum LogicGate {
     OR("0111"),
     NAND("1110");
 
-    private final Bit[] tt = new Bit[4];
+    private final Bit[] truthTable = new Bit[4];
 
-    LogicGate(String tt) {
-        for(int i = 0; i < tt.length(); i++) {
-            this.tt[i] = new Bit(tt.charAt(i) % 2);
+    LogicGate(String truthTable) {
+        for(int i = 0; i < truthTable.length(); i++) {
+            this.truthTable[i] = new Bit(truthTable.charAt(i) % 2);
         }
     }
 
-    public Bit output(Bit a, Bit b) {
-        return tt[(a.getVal() * 2) + b.getVal()];
+    public Bit gate(Bit a, Bit b) {
+        return truthTable[(a.getVal() * 2) + b.getVal()];
     }
 
     @Override
     public String toString() {
-        return this.name() + "[" + tt[0] +  ", " + tt[1] + ", " + tt[2] + ", " + tt[3] + "]";
+        return this.name() + "[" + truthTable[0] +  ", " + truthTable[1] + ", " + truthTable[2] + ", " + truthTable[3] + "]";
     }
 
 }

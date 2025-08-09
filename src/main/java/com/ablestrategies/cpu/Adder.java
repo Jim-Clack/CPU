@@ -18,7 +18,7 @@ public class Adder extends Octet {
             halfAdder.add(getBit(bitNum), octet.getBit(bitNum));
             Bit step1Carry = halfAdder.getCarry();
             halfAdder.add(halfAdder.getSum(), carry);
-            carry = LogicGate.OR.output(halfAdder.getCarry(), step1Carry);
+            carry = LogicGate.OR.gate(halfAdder.getCarry(), step1Carry);
             setBit(bitNum, halfAdder.getSum());
         }
         carry = halfAdder.getCarry();

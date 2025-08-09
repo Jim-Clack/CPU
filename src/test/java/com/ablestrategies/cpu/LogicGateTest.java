@@ -22,10 +22,10 @@ class LogicGateTest {
             for (int b = 0; b < 2; b++) {
                 Bit bitA = new Bit(a);
                 Bit bitB = new Bit(b);
-                Bit result = gate.output(bitA, bitB);
+                Bit result = gate.gate(bitA, bitB);
                 System.out.println(" a=" + a + ", b=" + b + ", ==>" + result);
                 int expected = tester.applyAsInt(bitA.getVal(), bitB.getVal());
-                assertEquals(expected != 0, result.getVal() != 0);
+                assertEquals(expected, result.getVal());
             }
         }
     }

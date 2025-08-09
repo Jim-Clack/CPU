@@ -13,19 +13,19 @@ public class Register extends Adder {
 
     public void and(Register register) {
         for (int i = 0; i < Octet.NumBits; i++) {
-            setBit(i, LogicGate.AND.output(getBit(i), register.getBit(i)));
+            setBit(i, LogicGate.AND.gate(getBit(i), register.getBit(i)));
         }
     }
 
     public void or(Register register) {
         for (int i = 0; i < Octet.NumBits; i++) {
-            setBit(i, LogicGate.OR.output(getBit(i), register.getBit(i)));
+            setBit(i, LogicGate.OR.gate(getBit(i), register.getBit(i)));
         }
     }
 
     public void xor(Register register) {
         for (int i = 0; i < Octet.NumBits; i++) {
-            setBit(i, LogicGate.XOR.output(getBit(i), register.getBit(i)));
+            setBit(i, LogicGate.XOR.gate(getBit(i), register.getBit(i)));
         }
     }
 
