@@ -33,14 +33,21 @@ public class Substrate {
         return opcode.getValue();
     }
 
-    protected void push(IDataCell arg) {
-        memoryCells[registers[SP].getIntValue()].set(arg);
+    protected void push(Octet arg) {
+        memoryCells[registers[SP].getIntValue()].clone(arg);
         registers[SP].set(registers[SP].getIntValue() - 1);
     }
 
-    protected IDataCell pop() {
+    protected Octet pop() {
         registers[SP].set(registers[SP].getIntValue() + 1);
         return registers[SP];
     }
 
+    protected Register getRegister(int registerNum) {
+        return registers[registerNum];
+    }
+
+    protected MemoryCell getMemoryCell(int cellNum) {
+        return memoryCells[cellNum];
+    }
 }

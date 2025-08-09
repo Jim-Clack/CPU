@@ -6,8 +6,8 @@ public class HalfAdder {
     private Bit carry = new Bit(0);
 
     public Bit add(Bit p, Bit q) {
-        sum = Gate.XOR.output(p, q);
-        carry = Gate.AND.output(p, q);
+        sum = LogicGate.XOR.output(p, q);
+        carry = LogicGate.AND.output(p, q);
         return sum;
     }
 

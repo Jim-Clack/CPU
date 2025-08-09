@@ -1,6 +1,6 @@
 package com.ablestrategies.cpu;
 
-public class Octet implements IDataCell {
+public class Octet {
 
     public static int NumBits = 8;
     public static int MaxBitNum = 7;
@@ -15,11 +15,21 @@ public class Octet implements IDataCell {
         }
     }
 
-    public Octet set(Octet other) {
-        for (int i = 0; i < NumBits; i++) {
-            this.content[i] = new Bit(other.content[i].getVal());
-        }
+    public Octet clone(Octet other) {
+        set(other);
         return this;
+    }
+
+    public void set(Octet from) {
+        for (int i = 0; i < NumBits; i++) {
+            this.content[i] = new Bit(from.content[i].getVal());
+        }
+    }
+
+    public void setUnsignedValue(int intVal) {
+        for (int i = 0; i < NumBits; i++) {
+            setBit(i, new Bit((intVal & (1 << i)) > 0));
+        }
     }
 
     public void setBit(int bitNum, Bit bit) {
@@ -70,6 +80,32 @@ public class Octet implements IDataCell {
         return carry;
     }
 
+    public void set(int from) {
+        set(new Octet(from));
+    }
+
+    public void set(String from) {
+        set(new Octet(from));
+    }
+
+    public int getIntValue() {
+        int accumulator = getUnsignedValue();
+        if(accumulator >= MaxBitWgt) { // negatives
+            accumulator = accumulator - NextBitWgt;
+        }
+        return accumulator;
+    }
+
+    public int getUnsignedValue() {
+        int accumulator = 0;
+        int multiplier = 1;
+        for (int i = NumBits; i > 0; i--) {
+            accumulator += content[i-1].getVal() * multiplier;
+            multiplier *= 2;
+        }
+        return accumulator;
+    }
+
     ////////////////////////////////// I/O ///////////////////////////////////
 
     public Octet(String bits) {
@@ -103,43 +139,4 @@ public class Octet implements IDataCell {
         return sb.toString();
     }
 
-    ////////////////////////////////// IData /////////////////////////////////
-
-    public int getIntValue() {
-        int accumulator = 0;
-        int multiplier = 1;
-        for (int i = NumBits; i > 0; i--) {
-            accumulator += content[i-1].getVal() * multiplier;
-            multiplier *= 2;
-        }
-        if(accumulator >= MaxBitWgt) { // negatives
-            accumulator = accumulator - NextBitWgt;
-        }
-        return accumulator;
-    }
-
-    @Override
-    public void setIntValue(int val) {
-
-    }
-
-    @Override
-    public IDataCell get() {
-        return this;
-    }
-
-    @Override
-    public void set(IDataCell value) {
-        this.set(value);
-    }
-
-    @Override
-    public void unsignedSetInt(int val) {
-
-    }
-
-    @Override
-    public int unsignedGetInt() {
-        return 0; // TODO
-    }
 }

@@ -1,6 +1,6 @@
 package com.ablestrategies.cpu;
 
-public enum Gate {
+public enum LogicGate {
     AND("0001"),
     XOR("0110"),
     OR("0111"),
@@ -8,7 +8,7 @@ public enum Gate {
 
     private final Bit[] tt = new Bit[4];
 
-    Gate(String tt) {
+    LogicGate(String tt) {
         for(int i = 0; i < tt.length(); i++) {
             this.tt[i] = new Bit(tt.charAt(i) % 2);
         }

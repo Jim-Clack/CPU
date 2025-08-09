@@ -14,7 +14,6 @@ public class ExecutorOneArg extends ExecutorNoArg {
                 registers[IP].set(argument1);
                 break;
         }
-
         return false;
     }
 

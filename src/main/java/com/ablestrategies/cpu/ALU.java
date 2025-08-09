@@ -5,7 +5,7 @@ public class ALU extends ExecutorTwoArgs {
     public void ipl(byte[] program) {
         int index = 0;
         for(byte byt : program) {
-            memoryCells[index++].unsignedSetInt(byt);
+            memoryCells[index++].setUnsignedValue((int)byt); // TODO unsigned?
         }
     }
 
