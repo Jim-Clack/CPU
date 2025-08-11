@@ -2,6 +2,15 @@ package com.ablestrategies.cpu;
 
 import java.util.Scanner;
 
+/**
+ * Device Driver
+ * 1. Install driver on CPU
+ * 2. Implement ICallableDevice to receive output from CPU
+ * 3. cpu.ioPorts[OutputPort].setDeviceCallback(this);
+ * 4. cpu.ioPorts[OutputPort].setInterruptNumber(OutputIRQ);
+ * 5. cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
+ * 6. To send input to CPU: cpu.ioPorts[InputPort].inputToCpu(value);
+ */
 public class SampleIoDevice implements ICallableDevice {
 
     public static int OutputIRQ = 4;
@@ -48,11 +57,11 @@ public class SampleIoDevice implements ICallableDevice {
     }
 
     private void installDriver() {
-        cpu.assemble(driverCode);
+        new Assembler(cpu).assemble(driverCode);
     }
 
     @Override
-    public int OutputFromALU(int value) {
+    public int OutputFromCPU(int value) {
         System.out.println("\nOutput from CPU simulator to SampleIoDevice: " + value);
         return 0; // no interrupt needed
     }

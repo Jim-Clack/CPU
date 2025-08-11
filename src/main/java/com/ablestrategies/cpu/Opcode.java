@@ -20,9 +20,11 @@ public enum Opcode {
     INVALID(0, "INVALID", 0),
     NOOP(1, "NOOP", 0),
     RET(5, "RET", 0),
+    IRET(6, "IRET", 0),
+    LEAVE(8, "LEAVE", 0),
+    ILEAVE(9, "ILEAVE", 0),
 
     ENTER(11, "ENTER", 1),
-    LEAVE(12, "LEAVE", 1),
     JMP(14, "JMP", 1),
     JMPZE(15, "JMPZE", 1),
     JMPGT(16, "JMPGT", 1),
@@ -47,8 +49,10 @@ public enum Opcode {
     LOADREG(205, "LOADREG", 2),
     LOADMEM(206, "LOADFRA", 2),
     LOADFRA(207, "LOADFRA", 2),
-    STORMEM(206, "STORMEM", 2),
-    STORFRA(207, "STORFRA", 2);
+    STORMEM(208, "STORMEM", 2),
+    STORFRA(209, "STORFRA", 2),
+    INPUT(211, "INPUT", 2),
+    OUTPUT(215, "OUTPUT", 2);
 
     private final int value;
     private final String mnemonic;

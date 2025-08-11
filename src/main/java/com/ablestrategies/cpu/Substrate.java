@@ -52,11 +52,16 @@ public abstract class Substrate {
         return registers[SP];
     }
 
-    protected Register getRegister(int registerNum) {
+    public Register getRegister(int registerNum) {
         return registers[registerNum];
     }
 
-    protected MemoryCell getMemoryCell(int cellNum) {
+    public MemoryCell getMemoryCell(int cellNum) {
         return memoryCells[cellNum];
     }
+
+    public IOPort getIoPort(int portNum) {
+        return ioPorts[portNum];
+    }
+
 }

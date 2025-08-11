@@ -2,8 +2,8 @@ package com.ablestrategies.cpu;
 
 public enum LogicGate {
     AND("0001"),
-    XOR("0110"),
     OR("0111"),
+    XOR("0110"),
     NAND("1110");
 
     private final Bit[] truthTable = new Bit[4];

@@ -56,6 +56,12 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
             case STORFRA:
                 // TODO
                 break;
+            case INPUT:
+                // TODO
+                break;
+            case OUTPUT:
+                // TODO
+                break;
             default:
                 return true;
         }

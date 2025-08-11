@@ -1,35 +1,48 @@
 package com.ablestrategies.cpu;
 
-public class CPU extends ALU {
+public class CPU extends ExecutorTwoArgs implements IInterruptable {
 
-    public void assemble(String program) {
-        int index = 0;
-        StringBuilder sb = new StringBuilder();
-        for(char ch : program.toCharArray()) {
-            if(ch == '\n' || ch == '\r' || ch == ',' || ch == ';') {
-                String deposit = sb.toString();
-                sb.setLength(0);
-                if(!deposit.isEmpty()) {
-                    int value = 0;
-                    String[] split = deposit.split(":");
-                    if (split.length == 2) {
-                        index = Integer.parseInt(split[0]);
-                        deposit = split[1];
-                    }
-                    try {
-                        value = Integer.parseInt(deposit);
-                    } catch (NumberFormatException ex) {
-                        index = Opcode.opcode(deposit).getValue(); // ASM
-                    }
-                    if (value >= Octet.MaxBitWgt) {
-                        value = value - Octet.NextBitWgt;
-                    }
-                    memoryCells[index++].set(value);
+    private Integer interruptNumber = 0;
+
+    public CPU() {
+        initialize(this);
+    }
+
+    public void run() {
+        boolean fatal = false;
+        while(!fatal) {
+            handleInterrupts();
+            Opcode opcode = Opcode.opcode(getNextOpcode());
+            if (opcode.getNumArgs() < 1) {
+                fatal = execute(opcode);
+            } else {
+                int argument1 = getNextOpcode();
+                if (opcode.getNumArgs() < 2) {
+                    fatal = execute(opcode, argument1);
+                } else {
+                    int argument2 = getNextOpcode();
+                    fatal = execute(opcode, argument1, argument2);
                 }
-            } else if(ch != '\t' && ch != ' ' && ch != '#') {
-                sb.append(ch);
             }
         }
+        System.out.printf("{%03d}: FATAL\n", registers[IP].getIntValue() - 1);
+    }
+
+    public synchronized void sendInterrupt(int interruptNumber) {
+        this.interruptNumber = interruptNumber;
+    }
+
+    public synchronized void handleInterrupts() {
+        if(interruptNumber == 0) {
+            return;
+        }
+        if(stepping) {
+            System.out.printf("{%03d}: INTERRUPT {%d}\n", registers[IP].getIntValue() - 1, interruptNumber);
+        }
+        push(registers[IP]);
+        registers[IN].set(interruptNumber);
+        registers[IP].set(registers[IV].getIntValue());
+        interruptNumber = 0;
     }
 
 }
