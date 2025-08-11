@@ -1,26 +1,35 @@
 package com.ablestrategies.cpu;
 
-public class Substrate {
+public abstract class Substrate {
 
     // reserved registers
-    public static int IP = 11;
-    public static int SP = 12;
-    public static int FP = 13;
+    public static int FP = 11; // frame pointer (within stack)
+    public static int SP = 12; // stack pointer (grows downward)
+    public static int IP = 13; // instruction pointer (program counter)
+    public static int IV = 14; // interrupt vector (page 0 code pointer)
+    public static int IN = 15; // interrupt number (set by interrupter)
+    public static int MaxUserReg = 10;
 
     protected final MemoryCell[] memoryCells = new MemoryCell[250];
-    protected final Register[] registers = new Register[14];
+    protected final Register[] registers = new Register[16];
+    protected final IOPort[] ioPorts = new IOPort[250];
     protected boolean stepping = false;
 
-    public Substrate() {
+    public void initialize(IInterruptable interruptableALU) {
         for (int i = 0; i < memoryCells.length; i++) {
             memoryCells[i] = new MemoryCell();
         }
         for (int i = 0; i < registers.length; i++) {
             registers[i] = new Register();
         }
+        for (int i = 0; i < ioPorts.length; i++) {
+            ioPorts[i] = new IOPort(interruptableALU);
+        }
         registers[IP].set(0);
         registers[SP].set(memoryCells.length - 1);
         registers[FP].set(memoryCells.length - 1);
+        registers[IV].set(0);
+        registers[IN].set(0);
     }
 
     public void setStepping(boolean stepping) {
@@ -28,7 +37,7 @@ public class Substrate {
     }
 
     protected int getNextOpcode() {
-        Opcode opcode = Opcode.Opcode(memoryCells[registers[IP].getIntValue()].getIntValue());
+        Opcode opcode = Opcode.opcode(memoryCells[registers[IP].getIntValue()].getIntValue());
         registers[IP].set(registers[IP].getIntValue() + 1);
         return opcode.getValue();
     }

@@ -41,4 +41,8 @@ public class Adder extends Octet {
         return getBit(Octet.MaxBitNum);
     }
 
-}
+    public Bit shiftLeft(int howFar) { carry = super.shiftLeft(howFar); return carry; }
+
+    public Bit shiftRight(int howFar) { carry = super.shiftRight(howFar); return carry; }
+
+    }

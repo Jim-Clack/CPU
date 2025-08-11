@@ -51,7 +51,7 @@ public class Octet {
 
     public Octet onesCompliment() {
         for (int i = 0; i < NumBits; i++) {
-            content[i] = new Bit(content[i].getVal() == 0 ? 1 : 0);
+            content[i] = new Bit(content[i].inverse());
         }
         return this;
     }

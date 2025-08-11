@@ -1,26 +1,23 @@
 package com.ablestrategies.cpu;
 
-public class ALU extends ExecutorTwoArgs {
+public class ALU extends ExecutorTwoArgs implements IInterruptable {
 
-    public void ipl(byte[] program) {
-        int index = 0;
-        for(byte byt : program) {
-            memoryCells[index++].setUnsignedValue((int)byt); // TODO unsigned?
-        }
+    private Integer interruptNumber = 0;
+
+    public ALU() {
+        initialize(this);
     }
 
     public void run() {
         boolean fatal = false;
         while(!fatal) {
-            Opcode opcode = Opcode.Opcode(getNextOpcode());
-            if(stepping) {
-                System.out.println(" >>> [" + (registers[IP].getIntValue() - 1) + "]=" + opcode.getMnemonic());
-            }
-            if (opcode.getArgType().typeNum() < ArgType.ONE_ARG.typeNum()) {
+            handleInterrupts();
+            Opcode opcode = Opcode.opcode(getNextOpcode());
+            if (opcode.getNumArgs() < 1) {
                 fatal = execute(opcode);
             } else {
                 int argument1 = getNextOpcode();
-                if (opcode.getArgType().typeNum() < ArgType.TWO_ARGS.typeNum()) {
+                if (opcode.getNumArgs() < 2) {
                     fatal = execute(opcode, argument1);
                 } else {
                     int argument2 = getNextOpcode();
@@ -28,6 +25,24 @@ public class ALU extends ExecutorTwoArgs {
                 }
             }
         }
+        System.out.printf("{%03d}: FATAL\n", registers[IP].getIntValue() - 1);
+    }
+
+    public synchronized void sendInterrupt(int interruptNumber) {
+        this.interruptNumber = interruptNumber;
+    }
+
+    public synchronized void handleInterrupts() {
+        if(interruptNumber == 0) {
+            return;
+        }
+        if(stepping) {
+            System.out.printf("{%03d}: INTERRUPT {%d}\n", registers[IP].getIntValue() - 1, interruptNumber);
+        }
+        push(registers[IP]);
+        registers[IN].set(interruptNumber);
+        registers[IP].set(registers[IV].getIntValue());
+        interruptNumber = 0;
     }
 
 }
