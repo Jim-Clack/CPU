@@ -1,5 +1,16 @@
 package com.ablestrategies.cpu;
 
+/**
+ * Sort of an mini-assembler that does not do fixups (references).
+ * Pass in a string that contains a series of the following:
+ *    address:value
+ *    address:opcode
+ *    value
+ *    opcode
+ * These can be newline-delimited or comma-delimited. If the address
+ * is omitted, it increments starting from zero. Opcodes are not case-
+ * sensitive. Spaces are optional and ignored. Comments begin with #.
+ */
 public class Assembler {
 
     private final CPU cpu;
@@ -10,12 +21,13 @@ public class Assembler {
 
     public void assemble(String program) {
         int address = 0;
+        boolean comment = false;
         StringBuilder sb = new StringBuilder();
         for(char ch : program.toCharArray()) {
             if(ch == '\n' || ch == '\r' || ch == ',' || ch == ';') {
                 String deposit = sb.toString();
                 sb.setLength(0);
-                if(!deposit.isEmpty()) {
+                if (!deposit.isEmpty()) {
                     String[] split = deposit.split(":");
                     if (split.length == 2) {
                         address = Integer.parseInt(split[0]);
@@ -26,7 +38,10 @@ public class Assembler {
                     }
                     address++;
                 }
-            } else if(ch != '\t' && ch != ' ' && ch != '#') {
+                comment = false;
+            } else if (ch == '#') {
+                comment = true;
+            } else if(ch != '\t' && ch != ' ' && !comment) {
                 sb.append(ch);
             }
         }

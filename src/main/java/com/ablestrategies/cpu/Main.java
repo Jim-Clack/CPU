@@ -2,15 +2,27 @@ package com.ablestrategies.cpu;
 
 /**
  * TODO
- * Substrate - isInInterrupt
- * handleInterrupt - deal with isInInterrupt
- * sendInterrupt - use a queue
- * ioPort - Fewer output intercepts needed
+ * ENTER: push(All+FP), adjust SP
+ * LEAVE/ILEAVE: set SP<-FP, pop(FP+All), RET
+ * IOPort - Fewer output intercepts needed
+ * Implement remaining Opcodes
+ * Include doc PDF in repo
  */
 public class Main {
 
     public static void main(String[] args) {
         Main main = new Main();
+    }
+
+    public Main() { // Functor
+        CPU cpu = new CPU();
+        cpu.setStepping(true);
+        SampleIoDevice device = new SampleIoDevice(cpu);
+        try {
+            device.getSimulatorThread().join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

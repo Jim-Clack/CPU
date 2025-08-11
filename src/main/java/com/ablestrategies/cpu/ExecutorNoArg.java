@@ -8,30 +8,30 @@ public class ExecutorNoArg extends Substrate {
                     registers[IP].getIntValue() - 1, opcode.toString());
         }
         switch(opcode) {
-            case Opcode.IRET:
-                // TODO - enable interrupts
+            case IRET:
+                enableInterrupts = true;
                 registers[IP].set(pop());
                 break;
-            case Opcode.RET:
+            case RET:
                 registers[IP].set(pop());
                 break;
-            case Opcode.LEAVE:
+            case LEAVE:
                 for(int i = MaxUserReg; i >= 0; i--) {
                     registers[i].set(pop());
                 }
                 registers[FP].set(pop());
                 registers[IP].set(pop());
                 break;
-            case Opcode.ILEAVE:
-                // TODO - enable interrupts
+            case ILEAVE:
+                enableInterrupts = true;
                 for(int i = MaxUserReg; i >= 0; i--) {
                     registers[i].set(pop());
                 }
                 registers[FP].set(pop());
                 registers[IP].set(pop());
                 break;
-            case Opcode.INVALID:
-            case Opcode.NOOP:
+            case INVALID:
+            case NOOP:
                 break;
             default:
                 return true;

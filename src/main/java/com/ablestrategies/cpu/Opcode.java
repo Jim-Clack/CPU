@@ -35,6 +35,8 @@ public enum Opcode {
     POP(32, "POP", 1),
     NEGATE(35, "NEGATE", 1),
     INVERT(36, "INVERT", 1),
+    INCR(38, "INCR", 1),
+    DECR(39, "DECR", 1),
 
     SHFTREG(101, "SHFTREG", 2),
     ANDREG(104, "ANDREG", 2),

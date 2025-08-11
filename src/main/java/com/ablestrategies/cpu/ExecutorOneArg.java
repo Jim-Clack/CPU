@@ -8,40 +8,46 @@ public class ExecutorOneArg extends ExecutorNoArg {
                     registers[IP].getIntValue() - 1, opcode.toString(), argument1);
         }
         switch(opcode) {
-            case Opcode.ENTER:
+            case ENTER:
                 for(int i = 0; i <= MaxUserReg; i++) {
                     push(registers[i]);
                 } // arg = frame size...
                 registers[FP].set(registers[FP].getIntValue() + argument1);
-            case Opcode.PUSH:
+            case PUSH:
                 push(registers[argument1]);
                 break;
-            case Opcode.POP:
+            case POP:
                 registers[argument1].set(pop());
                 break;
-            case Opcode.JMP:
+            case JMP:
                 registers[IP].set(argument1);
                 break;
-            case Opcode.CALL:
+            case CALL:
                 push(registers[IP]);
                 registers[IP].set(argument1);
                 break;
-            case Opcode.JMPZE:
+            case JMPZE:
                 // TODO
                 break;
-            case Opcode.JMPGT:
+            case JMPGT:
                 // TODO
                 break;
-            case Opcode.JMPLT:
+            case JMPLT:
                 // TODO
                 break;
-            case Opcode.JMPREG:
+            case JMPREG:
                 // TODO
                 break;
-            case Opcode.NEGATE:
+            case NEGATE:
                 // TODO
                 break;
-            case Opcode.INVERT:
+            case INVERT:
+                // TODO
+                break;
+            case INCR:
+                // TODO
+                break;
+            case DECR:
                 // TODO
                 break;
             default:

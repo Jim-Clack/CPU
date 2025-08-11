@@ -1,8 +1,11 @@
 package com.ablestrategies.cpu;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class CPU extends ExecutorTwoArgs implements IInterruptable {
 
-    private Integer interruptNumber = 0;
+    private LinkedBlockingQueue<Integer> interruptNumbers = new LinkedBlockingQueue<>();
 
     public CPU() {
         initialize(this);
@@ -28,13 +31,25 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         System.out.printf("{%03d}: FATAL\n", registers[IP].getIntValue() - 1);
     }
 
-    public synchronized void sendInterrupt(int interruptNumber) {
-        this.interruptNumber = interruptNumber;
+    public void sendInterrupt(int interruptNumber) {
+        try {
+            this.interruptNumbers.put(interruptNumber);
+        } catch (InterruptedException e) {
+            System.out.printf("FAILURE to put interrupt " + interruptNumber + "\n" + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
-    public synchronized void handleInterrupts() {
-        if(interruptNumber == 0) {
+    public void handleInterrupts() {
+        if(interruptNumbers.isEmpty() || !enableInterrupts) {
             return;
+        }
+        int interruptNumber = 0;
+        try {
+            interruptNumber = interruptNumbers.take();
+        } catch (InterruptedException e) {
+            System.out.printf("FAILURE to take interrupt " + interruptNumber + "\n" + e.getMessage());
+            throw new RuntimeException(e);
         }
         if(stepping) {
             System.out.printf("{%03d}: INTERRUPT {%d}\n", registers[IP].getIntValue() - 1, interruptNumber);
@@ -42,7 +57,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         push(registers[IP]);
         registers[IN].set(interruptNumber);
         registers[IP].set(registers[IV].getIntValue());
-        interruptNumber = 0;
+        enableInterrupts = false;
     }
 
 }

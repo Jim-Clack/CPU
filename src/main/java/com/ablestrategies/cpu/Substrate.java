@@ -13,6 +13,7 @@ public abstract class Substrate {
     protected final MemoryCell[] memoryCells = new MemoryCell[250];
     protected final Register[] registers = new Register[16];
     protected final IOPort[] ioPorts = new IOPort[250];
+    protected boolean enableInterrupts = true;
     protected boolean stepping = false;
 
     public void initialize(IInterruptable interruptableALU) {

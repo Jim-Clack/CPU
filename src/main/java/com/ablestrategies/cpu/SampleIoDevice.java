@@ -3,13 +3,7 @@ package com.ablestrategies.cpu;
 import java.util.Scanner;
 
 /**
- * Device Driver
- * 1. Install driver on CPU
- * 2. Implement ICallableDevice to receive output from CPU
- * 3. cpu.ioPorts[OutputPort].setDeviceCallback(this);
- * 4. cpu.ioPorts[OutputPort].setInterruptNumber(OutputIRQ);
- * 5. cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
- * 6. To send input to CPU: cpu.ioPorts[InputPort].inputToCpu(value);
+ * Device Driver - Echoes an integer as its ASCII character equivalent.
  */
 public class SampleIoDevice implements ICallableDevice {
 
@@ -19,6 +13,7 @@ public class SampleIoDevice implements ICallableDevice {
     public static int InputPort = 11;
     private final CPU cpu;
     private final SampleIoDevice thisGuy = this;
+    private final Thread simulator;
 
     private final String driverCode =
             "0:0, 22, 75\n" +
@@ -27,7 +22,7 @@ public class SampleIoDevice implements ICallableDevice {
     public SampleIoDevice(CPU cpu) {
         this.cpu = cpu;
         installDriver();
-        Thread simulator = simulate();
+        simulator = simulate();
         simulator.setName("SampleIoDevice-Simulator-Thread");
         simulator.setDaemon(true);
         simulator.start();
@@ -56,14 +51,18 @@ public class SampleIoDevice implements ICallableDevice {
         };
     }
 
-    private void installDriver() {
-        new Assembler(cpu).assemble(driverCode);
+    public Thread getSimulatorThread() {
+        return simulator;
     }
 
     @Override
-    public int OutputFromCPU(int value) {
+    public int acceptOutputFromCPU(int value) {
         System.out.println("\nOutput from CPU simulator to SampleIoDevice: " + value);
         return 0; // no interrupt needed
+    }
+
+    private void installDriver() {
+        new Assembler(cpu).assemble(driverCode);
     }
 
 }
