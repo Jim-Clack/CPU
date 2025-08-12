@@ -8,11 +8,12 @@ public class ExecutorOneArg extends ExecutorNoArg {
                     registers[IP].getIntValue() - 1, opcode.toString(), argument1);
         }
         switch(opcode) {
-            case ENTER:
-                for(int i = 0; i <= MaxUserReg; i++) {
+            case ENTER: // FP <= SP then SP <= SP+arg1 then Push R0, R1 ... R10, FP
+                int initialSP = registers[SP].getUnsignedValue(); // NO!
+                for(int i = 0; i <= FP; i++) {
                     push(registers[i]);
-                } // arg = frame size...
-                registers[FP].set(registers[FP].getIntValue() + argument1);
+                }
+                registers[SP].set(registers[SP].getUnsignedValue() + argument1);
             case PUSH:
                 push(registers[argument1]);
                 break;

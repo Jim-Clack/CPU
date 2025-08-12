@@ -8,18 +8,17 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                     registers[IP].getIntValue() - 1, opcode.toString(), argument1, argument2);
         }
         Register register;
+        IOPort ioPort;
+        MemoryCell memoryCell;
         switch(opcode) {
             case LOADIMM:
-                register = getRegister(argument1);
-                register.set(argument2);
+                getRegister(argument1).setUnsignedValue(argument2);
                 break;
             case LOADMEM:
-                register = getRegister(argument1);
-                register.set(getMemoryCell(argument2));
+                getRegister(argument1).set(getMemoryCell(argument2).getUnsignedValue());
                 break;
             case STORMEM:
-                register = getRegister(argument1);
-                getMemoryCell(argument2).set(register);
+                getMemoryCell(argument2).set(getRegister(argument1).getUnsignedValue());
             case SHFTREG:
                 // TODO
                 break;
@@ -57,10 +56,10 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 // TODO
                 break;
             case INPUT:
-                // TODO
+                registers[argument1].set(getIoPort(argument2).getUnsignedValue());
                 break;
             case OUTPUT:
-                // TODO
+                ioPorts[argument1].set(getRegister(argument2).getUnsignedValue());
                 break;
             default:
                 return true;

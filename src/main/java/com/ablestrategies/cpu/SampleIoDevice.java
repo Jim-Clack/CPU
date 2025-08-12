@@ -7,12 +7,12 @@ import java.util.Scanner;
  */
 public class SampleIoDevice implements ICallableDevice {
 
-    public static int OutputIRQ = 4;
     public static int OutputPort = 10;
     public static int InputIRQ = 5;
     public static int InputPort = 11;
+    // public static int OutputIRQ = 4; // Not used for this device
+
     private final CPU cpu;
-    private final SampleIoDevice thisGuy = this;
     private final Thread simulator;
 
     private final String driverCode =
@@ -29,11 +29,11 @@ public class SampleIoDevice implements ICallableDevice {
     }
 
     private Thread simulate() {
+        cpu.ioPorts[OutputPort].setDeviceCallback(this);
+        cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
+        // cpu.ioPorts[OutputPort].setInterruptNumber(OutputIRQ);
         return new Thread() {
             public void run() {
-                cpu.ioPorts[OutputPort].setDeviceCallback(thisGuy);
-                cpu.ioPorts[OutputPort].setInterruptNumber(OutputIRQ);
-                cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
                 Scanner keyboard = new Scanner(System.in);
                 while(true) {
                     System.out.println("\nInteger to send to CPU Simulator, or type quit, then hit Enter");
