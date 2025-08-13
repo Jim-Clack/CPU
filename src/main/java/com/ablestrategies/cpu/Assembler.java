@@ -3,7 +3,7 @@ package com.ablestrategies.cpu;
 import java.util.HashMap;
 
 /**
- * Two-pass Assembler.
+ * Two-pass Assembler/Linker.
  * Pass in a string that contains a series of the following statements:
  *   [label:] [address:] [opcode] [arg] [label:] ['byte, byte...'] ["string"]
  * These can be newline-delimited or semicolon-delimited. If the address

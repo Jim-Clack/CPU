@@ -9,8 +9,8 @@ public class ExecutorNoArg extends Substrate {
         }
         switch(opcode) {
             case IRET:
-                enableInterrupts = true;
                 registers[IP].set(pop().getUnsignedValue());
+                enableInterrupts = true;
                 break;
             case RET:
                 registers[IP].set(pop().getUnsignedValue());
@@ -23,16 +23,16 @@ public class ExecutorNoArg extends Substrate {
                 registers[IP].set(pop());
                 break;
             case ILEAVE:
-                enableInterrupts = true;
                 for(int i = MaxUserReg; i >= 0; i--) {
                     registers[i].set(pop().getUnsignedValue());
                 }
                 registers[FP].set(pop().getUnsignedValue());
                 registers[IP].set(pop().getUnsignedValue());
+                enableInterrupts = true;
                 break;
-            case INVALID:
             case NOOP:
                 break;
+            case INVALID:
             default:
                 return true;
         }

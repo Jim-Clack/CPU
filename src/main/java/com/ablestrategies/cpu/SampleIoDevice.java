@@ -16,8 +16,11 @@ public class SampleIoDevice implements ICallableDevice {
     private final Thread simulator;
 
     private final String driverCode =
-            "0:0, 22, 75\n" +
-            "5:0\n";
+        """
+            0: LOADIMM, 2, Label2
+            Label1: '1, 10, 100'
+            Label2: CALL 1234
+        """;
 
     public SampleIoDevice(CPU cpu) {
         this.cpu = cpu;

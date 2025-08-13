@@ -2,8 +2,7 @@ package com.ablestrategies.cpu;
 
 /**
  * TODO
- * ENTER: push(All+FP), adjust SP
- * LEAVE/ILEAVE: set SP<-FP, pop(FP+All), RET
+ * ENTER/LEAVE/ILEAVE: set SP<-FP, pop(FP+All), RET
  * Implement remaining Opcodes
  * Include doc PDF in repo
  */

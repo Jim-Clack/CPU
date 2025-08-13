@@ -4,7 +4,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class CPU extends ExecutorTwoArgs implements IInterruptable {
 
-    private LinkedBlockingQueue<Integer> interruptNumbers = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<Integer> interruptNumbers = new LinkedBlockingQueue<>();
+    private int traceCell = 0;
 
     public CPU() {
         initialize(this);
@@ -26,6 +27,16 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
                     fatal = execute(opcode, argument1, argument2);
                 }
             }
+            if(stepping) {
+                System.out.printf("ADDR INTS R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 RT FP SP IP IV IN %02x\n",
+                        memoryCells[traceCell].getUnsignedValue());
+                System.out.printf("%04x %4b ",
+                        registers[IP].getUnsignedValue() - 1, enableInterrupts);
+                for(Register register : registers) {
+                    System.out.printf(" %02x", register.getUnsignedValue());
+                }
+                System.out.println();
+            }
         }
         System.out.printf("{%03d}: FATAL\n", registers[IP].getSignedValue() - 1);
     }
@@ -39,7 +50,11 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         }
     }
 
-    public void handleInterrupts() {
+    private void setTraceCell(int traceCell) {
+        this.traceCell = traceCell;
+    }
+
+    private void handleInterrupts() {
         if(interruptNumbers.isEmpty() || !enableInterrupts) {
             return;
         }
