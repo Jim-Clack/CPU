@@ -8,8 +8,9 @@ import java.util.HashMap;
  *   [label:] [address:] [opcode] [arg] [label:] ['byte, byte...'] ["string"]
  * These can be newline-delimited or semicolon-delimited. If the address
  * is omitted, it increments starting from zero. Opcodes are not case-
- * sensitive. Spaces are optional and ignored. Comments begin with #. If
- * a label is left-justified then it's a target instead of a reference.
+ * sensitive. Spaces are optional and ignored. Comments begin with # and
+ * continue to the end of line or a semicolon. If a label is left-justified
+ * then it's a target instead of a reference.
  */
 public class Assembler {
 
@@ -56,13 +57,18 @@ public class Assembler {
     }
 
     private int parseBytes(String data, int address) {
+        int value = 0;
         data = data.substring(1);
-        if(data.endsWith("\'")) { // strip quotes
+        if(data.endsWith("'")) { // strip quotes
             data = data.substring(0, data.length() - 1);
         }
         String[] bytes = data.split(",");
         for(String b : bytes) {
-            int value = Integer.parseInt(b.trim());
+            try {
+                value = Integer.parseInt(b.trim());
+            } catch(NumberFormatException ex) {
+                System.out.println("ASM ERROR: Not a number: " + b);
+            }
             address = emit(address, value);
         }
         return address;
@@ -84,17 +90,19 @@ public class Assembler {
     private int parseLine(String deposit, int address) {
         if (!deposit.isEmpty()) {
             String[] split = deposit.split(":");
-            if (split.length == 2) {
-                address = Integer.parseInt(split[0]);
-                deposit = split[1];
-            }
-            if(split[0].endsWith(":") && !Character.isDigit(split[0].charAt(0))) {
-                if(passNumber == PassNumber.Pass1FindTargets) {
+            boolean isTarget = deposit.charAt(split[0].length()) == ':';
+            deposit = split[1];
+            if (!split[0].isEmpty() && isTarget) {
+                if (Character.isDigit(split[0].charAt(0))) { // addreee followed by colon
+                    address = Integer.parseInt(split[0]);
+                } else if(passNumber == PassNumber.Pass1FindTargets) { // left-justified label followed by colon
                     mapOfLabels.put(split[0].trim().toUpperCase(), address);
                 }
                 ++address;
-            } else {
-                address = parseOpcodeOrArg(deposit, address);
+            }
+            split = split[1].split(",");
+            for(String opcodeOrArg : split) {
+                address = parseOpcodeOrArg(opcodeOrArg.trim(), address);
             }
         }
         return address;
@@ -103,19 +111,23 @@ public class Assembler {
     private int parseOpcodeOrArg(String deposit, int address) {
         int value = 0;
         if(deposit.endsWith(":") && !Character.isDigit(deposit.charAt(0))) {
-            Integer valOrNull = mapOfLabels.get(deposit.trim().toUpperCase());
-            if(valOrNull == null) {
-                System.out.println("ASM ERROR: Cannot find label " + deposit);
-            } else {
+            Integer valOrNull = mapOfLabels.get(deposit.substring(0, deposit.length() - 1).trim().toUpperCase());
+            if(valOrNull != null) {
                 value = valOrNull;
+            } else {
+                System.out.println("ASM ERROR: Cannot find label " + deposit);
             }
         } else {
-            try {
-                value = Integer.parseInt(deposit);
-            } catch (NumberFormatException ex) {
+            if(Character.isDigit(deposit.charAt(0))) {
+                try {
+                    value = Integer.parseInt(deposit);
+                } catch (NumberFormatException ex) {
+                    System.out.println("ASM ERROR: Expected numeric at address " + address);
+                }
+            } else {
                 Opcode opcode = Opcode.opcode(deposit);
                 if (opcode.getValue() == Opcode.INVALID.getValue()) {
-                    System.out.println("ASM ERROR: Invalid entry at address " + address);
+                    System.out.println("ASM ERROR: Invalid opcode at address " + address);
                 }
                 value = opcode.getValue();
             }
