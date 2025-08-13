@@ -4,13 +4,6 @@ public class Adder extends Octet {
 
     protected Bit carry = new Bit(0);
 
-    @Override
-    public Octet clone(Octet octet) {
-        super.clone(octet);
-        carry = new Bit(0);
-        return this;
-    }
-
     public Octet add(Octet octet) {
         HalfAdder halfAdder = new HalfAdder();
         carry = new Bit(0);

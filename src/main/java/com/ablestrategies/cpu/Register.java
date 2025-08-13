@@ -3,7 +3,7 @@ package com.ablestrategies.cpu;
 public class Register extends Adder {
 
     public void zero() {
-        clone(new Octet());
+        set(0);
     }
 
     public void invert() {

@@ -1,5 +1,7 @@
 package com.ablestrategies.cpu;
 
+import java.util.HashMap;
+
 /**
  * Opcode Key:
  *   Operation + [Condition] + [AddrMode]
@@ -49,7 +51,7 @@ public enum Opcode {
     SUBREG(125, "SUBREG", 2),
     LOADIMM(204, "LOADIMM", 2),
     LOADREG(205, "LOADREG", 2),
-    LOADMEM(206, "LOADFRA", 2),
+    LOADMEM(206, "LOADMEM", 2),
     LOADFRA(207, "LOADFRA", 2),
     STORMEM(208, "STORMEM", 2),
     STORFRA(209, "STORFRA", 2),
@@ -60,6 +62,9 @@ public enum Opcode {
     private final String mnemonic;
     private final int numArgs;
 
+    private static HashMap<Integer, Opcode> mapByValue = new HashMap<>();
+    private static HashMap<String, Opcode> mapByMnemonic = new HashMap<>();
+
     Opcode(int value, String mnemonic, int numArgs) {
         this.value = value;
         this.mnemonic = mnemonic;
@@ -67,21 +72,21 @@ public enum Opcode {
     }
 
     public static Opcode opcode(int val) {
-        for (Opcode opcode : Opcode.values()) {
-            if(opcode.value == val) {
-                return opcode;
-            }
+        ensureMapsAreInitialized();
+        Opcode opcode = mapByValue.get(val);
+        if (opcode == null) {
+            opcode = INVALID;
         }
-        return INVALID;
+        return opcode;
     }
 
     public static Opcode opcode(String mnemonic) {
-        for (Opcode opcode : Opcode.values()) {
-            if(opcode.mnemonic.equalsIgnoreCase(mnemonic)) {
-                return opcode;
-            }
+        ensureMapsAreInitialized();
+        Opcode opcode = mapByMnemonic.get(mnemonic.trim().toUpperCase());
+        if (opcode == null) {
+            opcode = INVALID;
         }
-        return INVALID;
+        return opcode;
     }
 
     public int getValue() {
@@ -99,6 +104,16 @@ public enum Opcode {
     @Override
     public String toString() {
         return mnemonic + "(" + value + ")";
+    }
+
+    private static void ensureMapsAreInitialized() {
+        if (!mapByValue.isEmpty()) {
+            return;
+        }
+        for (Opcode opcode : Opcode.values()) {
+            mapByValue.put(opcode.value, opcode);
+            mapByMnemonic.put(opcode.mnemonic.trim().toUpperCase(), opcode);
+        }
     }
 
 }

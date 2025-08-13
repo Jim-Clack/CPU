@@ -15,9 +15,12 @@ public class Octet {
         }
     }
 
-    public Octet clone(Octet other) {
-        set(other);
-        return this;
+    public Octet(int intVal) {
+        set(intVal);
+    }
+
+    public Octet(String bits) {
+        set(bits);
     }
 
     public void set(Octet from) {
@@ -26,9 +29,24 @@ public class Octet {
         }
     }
 
-    public void setUnsignedValue(int intVal) {
+    public void set(int intVal) {
+        if(intVal < 0) {
+            intVal = NextBitWgt + intVal;
+        }
         for (int i = 0; i < NumBits; i++) {
             setBit(i, new Bit((intVal & (1 << i)) > 0));
+        }
+    }
+
+    public void set(String bits) {
+        int bitNum = 0;
+        for (int i = NumBits - 1; i >= 0; i--) {
+            int bit = 0;
+            if(bitNum < bits.length()) {
+                bit = bits.charAt(bitNum) % 2;
+            }
+            setBit(i, new Bit(bit));
+            bitNum++;
         }
     }
 
@@ -80,15 +98,7 @@ public class Octet {
         return carry;
     }
 
-    public void set(int from) {
-        set(new Octet(from));
-    }
-
-    public void set(String from) {
-        set(new Octet(from));
-    }
-
-    public int getIntValue() {
+    public int getSignedValue() {
         int accumulator = getUnsignedValue();
         if(accumulator >= MaxBitWgt) { // negatives
             accumulator = accumulator - NextBitWgt;
@@ -106,25 +116,6 @@ public class Octet {
         return accumulator;
     }
 
-    public Octet(String bits) {
-        for (int i = 0; i < NumBits; i++) {
-            int bitNum = MaxBitNum - i;
-            if(bitNum >= bits.length()) {
-                break;
-            }
-            setBit(bitNum, new Bit(bits.charAt(i) % 2));
-        }
-    }
-
-    public Octet(int intVal) {
-        if(intVal < 0) { // negative
-            intVal = NextBitWgt + intVal;
-        }
-        for (int i = 0; i < NumBits; i++) {
-            setBit(i, new Bit((intVal & (1 << i)) > 0));
-        }
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
@@ -132,7 +123,7 @@ public class Octet {
             sb.append(bit);
         }
         sb.append("](");
-        sb.append(getIntValue());
+        sb.append(getSignedValue());
         sb.append(")");
         return sb.toString();
     }

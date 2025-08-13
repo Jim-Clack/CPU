@@ -5,14 +5,14 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
     protected boolean execute(Opcode opcode, int argument1, int argument2) {
         if(stepping) {
             System.out.printf("{%03d}: {%s} {%d} {%d}\n",
-                    registers[IP].getIntValue() - 1, opcode.toString(), argument1, argument2);
+                    registers[IP].getSignedValue() - 1, opcode.toString(), argument1, argument2);
         }
         Register register;
         IOPort ioPort;
         MemoryCell memoryCell;
         switch(opcode) {
             case LOADIMM:
-                getRegister(argument1).setUnsignedValue(argument2);
+                getRegister(argument1).set(argument2);
                 break;
             case LOADMEM:
                 getRegister(argument1).set(getMemoryCell(argument2).getUnsignedValue());

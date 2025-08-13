@@ -5,7 +5,7 @@ public class ExecutorOneArg extends ExecutorNoArg {
     protected boolean execute(Opcode opcode, int argument1) {
         if(stepping) {
             System.out.printf("{%03d}: {%s} {%d}\n",
-                    registers[IP].getIntValue() - 1, opcode.toString(), argument1);
+                    registers[IP].getSignedValue() - 1, opcode.toString(), argument1);
         }
         switch(opcode) {
             case ENTER: // FP <= SP then SP <= SP+arg1 then Push R0, R1 ... R10, FP

@@ -30,37 +30,37 @@ class RegisterTest {
         testFlags(0, 1, 0, register);
 
         register.set("00011010");
-        int expected = register.getIntValue() << 3;
+        int expected = register.getSignedValue() << 3;
         register.shiftLeft(3);
         testValue(expected - Octet.NextBitWgt, register);
         testFlags(0, 0, 1, register);
 
         register.set("01011000");
-        expected = register.getIntValue() >> 3;
+        expected = register.getSignedValue() >> 3;
         register.shiftRight(3);
         testValue(expected, register);
         testFlags(0, 0, 0, register);
 
         register.set("11001010");
-        register2.set(register.getIntValue() ^ (Octet.NextBitWgt - 1));
+        register2.set(register.getSignedValue() ^ (Octet.NextBitWgt - 1));
         register.onesCompliment();
-        testValue(register2.getIntValue(), register);
+        testValue(register2.getSignedValue(), register);
 
         register2.set("01010101");
         register.set("00111100");
-        expected = register.getIntValue() & register2.getIntValue();
+        expected = register.getSignedValue() & register2.getSignedValue();
         register.and(register2);
         testValue(expected, register);
 
         register2.set("01010101");
         register.set("00111100");
-        expected = register.getIntValue() | register2.getIntValue();
+        expected = register.getSignedValue() | register2.getSignedValue();
         register.or(register2);
         testValue(expected, register);
 
         register2.set("01010101");
         register.set("00111100");
-        expected = register.getIntValue() ^ register2.getIntValue();
+        expected = register.getSignedValue() ^ register2.getSignedValue();
         register.xor(register2);
         testValue(expected, register);
 
@@ -68,7 +68,7 @@ class RegisterTest {
 
     void testValue(int expected, Register actual) {
         System.out.println(" " + expected + " ==> " + actual);
-        assertEquals(expected, actual.getIntValue());
+        assertEquals(expected, actual.getSignedValue());
     }
 
     void testFlags(int expZero, int expCarry, int expNegative, Register register) {

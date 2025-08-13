@@ -1,6 +1,5 @@
 package com.ablestrategies.cpu;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class CPU extends ExecutorTwoArgs implements IInterruptable {
@@ -28,7 +27,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
                 }
             }
         }
-        System.out.printf("{%03d}: FATAL\n", registers[IP].getIntValue() - 1);
+        System.out.printf("{%03d}: FATAL\n", registers[IP].getSignedValue() - 1);
     }
 
     public void sendInterrupt(int interruptNumber) {
@@ -52,11 +51,11 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
             throw new RuntimeException(e);
         }
         if(stepping) {
-            System.out.printf("{%03d}: INTERRUPT {%d}\n", registers[IP].getIntValue() - 1, interruptNumber);
+            System.out.printf("{%03d}: INTERRUPT {%d}\n", registers[IP].getSignedValue() - 1, interruptNumber);
         }
         push(registers[IP]);
         registers[IN].set(interruptNumber);
-        registers[IP].set(registers[IV].getIntValue());
+        registers[IP].set(registers[IV].getSignedValue());
         enableInterrupts = false;
     }
 

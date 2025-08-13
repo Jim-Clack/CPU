@@ -38,23 +38,23 @@ public abstract class Substrate {
     }
 
     protected int getNextOpcode() {
-        Opcode opcode = Opcode.opcode(memoryCells[registers[IP].getIntValue()].getUnsignedValue());
+        Opcode opcode = Opcode.opcode(memoryCells[registers[IP].getUnsignedValue()].getUnsignedValue());
         registers[IP].set(registers[IP].getUnsignedValue() + 1);
         return opcode.getValue();
     }
 
     protected void push(Octet arg) {
-        memoryCells[registers[SP].getUnsignedValue()].setUnsignedValue(arg.getUnsignedValue());
+        memoryCells[registers[SP].getUnsignedValue()].set(arg.getUnsignedValue());
         registers[SP].set(registers[SP].getUnsignedValue() - 1);
     }
 
     protected void push(int arg) {
-        memoryCells[registers[SP].getIntValue()].set(arg);
-        registers[SP].set(registers[SP].getIntValue() - 1);
+        memoryCells[registers[SP].getSignedValue()].set(arg);
+        registers[SP].set(registers[SP].getSignedValue() - 1);
     }
 
     protected Octet pop() {
-        registers[SP].set(registers[SP].getIntValue() + 1);
+        registers[SP].set(registers[SP].getSignedValue() + 1);
         return registers[SP];
     }
 

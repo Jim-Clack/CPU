@@ -19,13 +19,13 @@ class AdderTest {
         Octet octetP = new Octet(p);
         Octet octetQ = new Octet(q);
         Adder adder = new Adder();
-        adder.clone(octetP);
+        adder.set(octetP);
         System.out.println("Adder Test: " + octetP + " + " + octetQ);
         System.out.println(" Result=" + adder.add(octetQ));
         System.out.println("  Carry=" + adder.isCarry());
         System.out.println("   Zero=" + adder.isZero());
         System.out.println("    Neg=" + adder.isNegative());
-        assertEquals(expected, adder.getIntValue());
+        assertEquals(expected, adder.getSignedValue());
     }
 
 }

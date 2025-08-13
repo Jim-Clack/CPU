@@ -20,21 +20,15 @@ public class IOPort extends Octet {
 
     // Input API
     public void inputToCpu(int value) {
-        setUnsignedValue(value);
+        set(value);
         interruptableALU.sendInterrupt(interruptNumber);
     }
 
     // Output APIs
     @Override
-    public void setUnsignedValue(int intVal) {
-        super.setUnsignedValue(intVal);
-        interruptableALU.sendInterrupt(callableDevice.acceptOutputFromCPU(this.getIntValue()));
-    }
-
-    @Override
-    public void set(int from) {
-        super.set(from);
-        interruptableALU.sendInterrupt(callableDevice.acceptOutputFromCPU(this.getIntValue()));
+    public void set(int intVal) {
+        super.set(intVal);
+        interruptableALU.sendInterrupt(callableDevice.acceptOutputFromCPU(this.getSignedValue()));
     }
 
 }
