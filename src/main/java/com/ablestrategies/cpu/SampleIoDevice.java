@@ -21,12 +21,14 @@ public class SampleIoDevice implements ICallableDevice {
             0:      LOADIMM, 2, LabelA:   # 00: cc 02 05
                     JMP LabelB:           # 03: 0e 08
             LabelA: 1, 10, 100            # 05: 01 0a 64
-            LabelB: CALL 20               # 08: 12 14 
+            LabelB: CALL 24               # 08: 12 14 
                     "ABC"                 # 0a: 41 42 43 00
-                    LOADMEM 1, LabelA:    # 0e: ce 01 05
-                                          # 11: -- -- --                   
-            20:     ENTER 0               # 14: 0b 00
-                    LEAVE                 # 16: 08
+                    LOADMEM 1, LabelC:    # 0e: ce 01 12
+                    RET                   # 11: 05
+            LabelC: "D"                   # 12: 44 00
+                                          # 14: -- -- -- --                   
+            24:     ENTER 0               # 18: 0b 00
+                    LEAVE                 # 1a: 08
         """;
 
     public SampleIoDevice(CPU cpu) {

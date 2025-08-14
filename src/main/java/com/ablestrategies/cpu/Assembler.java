@@ -3,7 +3,7 @@ package com.ablestrategies.cpu;
 import java.util.HashMap;
 
 /**
- * Two-pass Assembler/Linker.
+ * Quickly two-pass Assembler/LinkLoader.
  * Pass in a string that contains a series of the following statements:
  *   [label:] [address:] [opcode] [arg] [label:] [byte, byte...] ["string"]
  * These can be newline-delimited or semicolon-delimited. If the address
@@ -22,6 +22,7 @@ public class Assembler {
     private final HashMap<String, Integer> mapOfLabels = new HashMap<>();
     private final CPU cpu;
     private PassNumber passNumber;
+    private boolean listHexCodes = true;
 
     public Assembler(CPU cpu) {
         this.cpu = cpu;
@@ -34,26 +35,32 @@ public class Assembler {
         processProgram(program);
     }
 
+    public void setListHexCodes(boolean listHexCodes) {
+        this.listHexCodes = listHexCodes;
+    }
+
     private void processProgram(String program) {
         int address = 0;
         boolean comment = false;
         boolean inString = false;
         StringBuilder sb = new StringBuilder();
         for(char ch : program.toCharArray()) {
-            if(ch == '\"' && !comment) {
+            if(ch == '\"' && !comment) { // quoted string
                 if(inString) {
                     address = parseString(sb.toString(), address);
+                } else if(!sb.isEmpty()) {
+                    address = parseLine(sb.toString(), address);
                 }
                 inString = !inString;
                 sb.setLength(0);
-            } else if(ch == '\n' || ch == '\r' || ch == ';') {
+            } else if(ch == '\n' || ch == '\r' || ch == ';') { // eoln
                 String deposit = sb.toString();
                 sb.setLength(0);
                 address = parseLine(deposit, address);
                 comment = false;
-            } else if (ch == '#') {
+            } else if (ch == '#') { // comment
                 comment = true;
-            } else if(!comment) {
+            } else if(!comment) { // else accumulate chars
                 sb.append(ch);
             }
         }
@@ -150,7 +157,10 @@ public class Assembler {
 
     private int emit(int address, int value) {
         if(passNumber == PassNumber.Pass2LinkLoad) {
-            System.out.printf(" >>> %04x: %02x \n", address, value); System.out.flush();
+            if(listHexCodes) {
+                System.out.printf(" >>> %04x: %02x \n", address, value);
+                System.out.flush();
+            }
             cpu.getMemoryCell(address).set(value);
         }
        return ++address;
