@@ -17,9 +17,16 @@ public class SampleIoDevice implements ICallableDevice {
 
     private final String driverCode =
         """
-            0: LOADIMM, 2, Label2
-            Label1: '1, 10, 100'
-            Label2: CALL 1234
+                    # Test                Addr: HexCodes
+            0:      LOADIMM, 2, LabelA:   # 00: cc 02 05
+                    JMP LabelB:           # 03: 0e 08
+            LabelA: 1, 10, 100            # 05: 01 0a 64
+            LabelB: CALL 20               # 08: 12 14 
+                    "ABC"                 # 0a: 41 42 43 00
+                    LOADMEM 1, LabelA:    # 0e: ce 01 05
+                                          # 11: -- -- --                   
+            20:     ENTER 0               # 14: 0b 00
+                    LEAVE                 # 16: 08
         """;
 
     public SampleIoDevice(CPU cpu) {
