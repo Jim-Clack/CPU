@@ -3,12 +3,12 @@ package com.ablestrategies.cpu;
 public abstract class Substrate {
 
     // reserved registers
+    public static int FLAGS = 10; // 1=zero, 2=carry, 4=sign, 8=enableIrq
     public static int FP = 11; // frame pointer (within stack)
     public static int SP = 12; // stack pointer (grows downward)
     public static int IP = 13; // instruction pointer (program counter)
     public static int IV = 14; // interrupt vector (page 0 code pointer)
     public static int IN = 15; // interrupt number (set by interrupter)
-    public static int MaxUserReg = 10;
 
     protected final MemoryCell[] memoryCells = new MemoryCell[250];
     protected final Register[] registers = new Register[16];
@@ -20,9 +20,11 @@ public abstract class Substrate {
         for (int i = 0; i < memoryCells.length; i++) {
             memoryCells[i] = new MemoryCell();
         }
+        FlagRegister flagRegister = new FlagRegister(this);
         for (int i = 0; i < registers.length; i++) {
-            registers[i] = new Register();
+            registers[i] = new Register(flagRegister);
         }
+        registers[FLAGS] = flagRegister;
         for (int i = 0; i < ioPorts.length; i++) {
             ioPorts[i] = new IOPort(interruptableALU);
         }

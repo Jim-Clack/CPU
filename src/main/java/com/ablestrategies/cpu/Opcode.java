@@ -3,7 +3,7 @@ package com.ablestrategies.cpu;
 import java.util.HashMap;
 
 /**
- * Opcode Key:
+ * Opcode Mnemonic Key:
  *   Operation + [Condition] + [AddrMode]
  * Conditions:
  *   ZE
@@ -23,10 +23,10 @@ public enum Opcode {
     NOOP(1, "NOOP", 0),
     RET(5, "RET", 0),
     IRET(6, "IRET", 0),
-    LEAVE(8, "LEAVE", 0),
-    ILEAVE(9, "ILEAVE", 0),
 
-    ENTER(11, "ENTER", 1),
+    ENTER(10, "ENTER", 1),
+    LEAVE(11, "LEAVE", 1),
+    ILEAVE(12, "ILEAVE", 1),
     JMP(14, "JMP", 1),
     JMPZE(15, "JMPZE", 1),
     JMPGT(16, "JMPGT", 1),
@@ -58,6 +58,7 @@ public enum Opcode {
     INPUT(211, "INPUT", 2),
     OUTPUT(215, "OUTPUT", 2);
 
+    public static int LongestMnemonicLgt = 7;
     private final int value;
     private final String mnemonic;
     private final int numArgs;

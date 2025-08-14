@@ -9,8 +9,9 @@ class RegisterTest {
     @Test
     void testRegister() {
         System.out.println("Register Tests:");
-        Register register = new Register();
-        Register register2 = new Register();
+        FlagRegister flagRegister = new FlagRegister(null);
+        Register register = new Register(flagRegister);
+        Register register2 = new Register(flagRegister);
 
         register.set(107);
         register.invert();

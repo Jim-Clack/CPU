@@ -27,8 +27,8 @@ public class SampleIoDevice implements ICallableDevice {
                     RET                   # 11: 05
             LabelC: "D"                   # 12: 44 00
                                           # 14: -- -- -- --                   
-            24:     ENTER 0               # 18: 0b 00
-                    LEAVE                 # 1a: 08
+            24:     ENTER 0               # 18: 0a 00
+                    LEAVE 0               # 1a: 0b 00
         """;
 
     public SampleIoDevice(CPU cpu) {

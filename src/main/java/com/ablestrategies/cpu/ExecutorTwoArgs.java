@@ -4,8 +4,9 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
 
     protected boolean execute(Opcode opcode, int argument1, int argument2) {
         if(stepping) {
-            System.out.printf("{%03d}: {%s} {%d} {%d}\n",
-                    registers[IP].getSignedValue() - 1, opcode.toString(), argument1, argument2);
+            System.out.printf("%03d: %s %d, %d\n",
+                    registers[IP].getSignedValue() - 3,
+                        opcode.getMnemonic(), argument1, argument2);
         }
         Register register;
         IOPort ioPort;
@@ -21,6 +22,7 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getMemoryCell(argument2).set(getRegister(argument1).getUnsignedValue());
             case SHFTREG:
                 // TODO
+                // lastAdderChanged =
                 break;
             case ANDREG:
                 // TODO

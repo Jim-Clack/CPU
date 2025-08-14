@@ -4,8 +4,8 @@ public class ExecutorOneArg extends ExecutorNoArg {
 
     protected boolean execute(Opcode opcode, int argument1) {
         if(stepping) {
-            System.out.printf("{%03d}: {%s} {%d}\n",
-                    registers[IP].getSignedValue() - 1, opcode.toString(), argument1);
+            System.out.printf("%03d: %s %d\n",
+                    registers[IP].getSignedValue() - 2, opcode.getMnemonic(), argument1);
         }
         switch(opcode) {
             case ENTER: // FP <= SP then SP <= SP+arg1 then Push R0, R1 ... R10, FP
@@ -14,6 +14,21 @@ public class ExecutorOneArg extends ExecutorNoArg {
                     push(registers[i]);
                 }
                 registers[SP].set(registers[SP].getUnsignedValue() + argument1);
+            case LEAVE: // leave: Pop FP, R10, R9 ... R0, then SP <= FP, then Pop IP (RET)
+                for(int i = FP; i >= 0; i--) { // NO!
+                    registers[i].set(pop().getUnsignedValue());
+                }
+                registers[SP].set(registers[FP].getUnsignedValue());
+                registers[IP].set(pop());
+                break;
+            case ILEAVE:
+                for(int i = FP; i >= 0; i--) {
+                    registers[i].set(pop().getUnsignedValue());
+                }
+                registers[FP].set(pop().getUnsignedValue());
+                registers[IP].set(pop().getUnsignedValue());
+                enableInterrupts = true;
+                break;
             case PUSH:
                 push(registers[argument1]);
                 break;

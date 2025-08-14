@@ -5,12 +5,24 @@ import java.util.HashMap;
 /**
  * Quickly two-pass Assembler/LinkLoader.
  * Pass in a string that contains a series of the following statements:
- *   [label:] [address:] [opcode] [arg] [label:] [byte, byte...] ["string"]
+ *  [label:] [address:] [[opcode[,]] [arg[,]...] [label:] [byte[,]...] ["string"]
  * These can be newline-delimited or semicolon-delimited. If the address
  * is omitted, it increments starting from zero. Opcodes are not case-
  * sensitive. Spaces are optional and ignored. Comments begin with # and
  * continue to the end of line or a semicolon. If a label is left-justified
- * then it's a target instead of a reference.
+ * then it's a target instead of a reference. Example code...
+ *             # Test                Addr: HexCodes
+ *     0:      LOADIMM, 2, LabelA:   # 00: cc 02 05
+ *             JMP LabelB:           # 03: 0e 08
+ *     LabelA: 1, 10, 100            # 05: 01 0a 64
+ *     LabelB: CALL 24               # 08: 12 14
+ *             "ABC"                 # 0a: 41 42 43 00
+ *             LOADMEM 1, LabelC:    # 0e: ce 01 12
+ *             RET                   # 11: 05
+ *     LabelC: "D"                   # 12: 44 00
+ *                                   # 14: -- -- -- --
+ *     24:     ENTER 0               # 18: 0a 00
+ *             LEAVE                 # 1a: 0b
  */
 public class Assembler {
 
@@ -23,9 +35,14 @@ public class Assembler {
     private final CPU cpu;
     private PassNumber passNumber;
     private boolean listHexCodes = true;
+    private int expectArgCount = 0;
 
     public Assembler(CPU cpu) {
         this.cpu = cpu;
+    }
+
+    public void setListHexCodes(boolean listHexCodes) {
+        this.listHexCodes = listHexCodes;
     }
 
     public void assemble(String program) {
@@ -33,10 +50,6 @@ public class Assembler {
         processProgram(program);
         passNumber = PassNumber.Pass2LinkLoad;
         processProgram(program);
-    }
-
-    public void setListHexCodes(boolean listHexCodes) {
-        this.listHexCodes = listHexCodes;
     }
 
     private void processProgram(String program) {
@@ -80,10 +93,14 @@ public class Assembler {
     }
 
     private int parseLine(String deposit, int address) {
+        if(expectArgCount > 0) {
+            System.out.println("ASM ERROR: Prior opcode did not have enough args");
+            expectArgCount = 0;
+        }
         if (!deposit.isEmpty()) {
             deposit = deposit.trim();
             String[] split = deposit.split(":", 2);
-            if(!split[0].matches(".*[ ,].*")) {
+            if(!split[0].matches(".*[ ,].*")) { // if it's a target label (left justified)
                 split[0] = split[0].trim();
                 boolean isTarget = deposit.length() > split[0].length() && deposit.charAt(split[0].length()) == ':';
                 if (!split[0].isEmpty() && isTarget) {
@@ -91,9 +108,9 @@ public class Assembler {
                     deposit = split[1].trim();
                 }
             }
-            if (!deposit.trim().isEmpty()) {
+            if (!deposit.trim().isEmpty()) { // parse remainder of line
                 int spacePos = deposit.indexOf(' ');
-                if(spacePos > 0 && spacePos < 8) {
+                if(spacePos > 0 && spacePos <= Opcode.LongestMnemonicLgt) { // insert missing comma
                     deposit = deposit.substring(0, spacePos) + "," +  deposit.substring(spacePos + 1);
                 }
                 split = deposit.split(",");
@@ -135,22 +152,25 @@ public class Assembler {
         } else if(passNumber == PassNumber.Pass2LinkLoad) {
             System.out.println("ASM ERROR: Cannot find label " + deposit);
         }
+        expectArgCount--;
         return value;
     }
 
-    private static int parseOpcodeOrByte(String deposit, int address, int value) {
+    private int parseOpcodeOrByte(String deposit, int address, int value) {
         if(Character.isDigit(deposit.charAt(0))) {
             try {
                 value = Integer.parseInt(deposit);
             } catch (NumberFormatException ex) {
                 System.out.println("ASM ERROR: Expected numeric at address " + address);
             }
+            expectArgCount--;
         } else {
             Opcode opcode = Opcode.opcode(deposit);
             if (opcode.getValue() == Opcode.INVALID.getValue()) {
                 System.out.println("ASM ERROR: Invalid opcode at address " + address);
             }
             value = opcode.getValue();
+            expectArgCount = opcode.getNumArgs();
         }
         return value;
     }

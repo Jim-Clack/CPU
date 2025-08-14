@@ -15,6 +15,10 @@ public class Octet {
         }
     }
 
+    public Octet(Octet octet) {
+        set(octet);
+    }
+
     public Octet(int intVal) {
         set(intVal);
     }
@@ -30,9 +34,6 @@ public class Octet {
     }
 
     public void set(int intVal) {
-        if(intVal < 0) {
-            intVal = NextBitWgt + intVal;
-        }
         for (int i = 0; i < NumBits; i++) {
             setBit(i, new Bit((intVal & (1 << i)) > 0));
         }
@@ -114,6 +115,11 @@ public class Octet {
             multiplier *= 2;
         }
         return accumulator;
+    }
+
+    public String getHexValue(int places) {
+        int value = getUnsignedValue();
+        return String.format("%02X", value);
     }
 
     @Override

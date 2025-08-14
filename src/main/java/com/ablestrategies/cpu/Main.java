@@ -16,6 +16,7 @@ public class Main {
         CPU cpu = new CPU();
         cpu.setStepping(true);
         SampleIoDevice device = new SampleIoDevice(cpu);
+        cpu.run();
         try {
             device.getSimulatorThread().join();
         } catch (InterruptedException e) {
