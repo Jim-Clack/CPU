@@ -2,11 +2,11 @@ package com.ablestrategies.cpu;
 
 /**
  * Device Installation
- * 1. Install driver on CPU with an ISR for input and any means for output.
- * 2. Externally, implement ICallableDevice acceptOutputFromCPU()
- * 3. Externally, cpu.ioPorts[OutputPort].setDeviceCallback(this);
- * 4. Externally, cpu.ioPorts[OutputPort].setInterruptNumber(OutputIRQ);
- * 5. Externally, cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
+ * 1. Install ASM driver on CPU with an ISR for input and any kind of output.
+ * 2. Externally/Java, implement ICallableDevice acceptOutputFromCPU()
+ * 3. Externally/Java, cpu.ioPorts[OutputPort].setDeviceCallback(this);
+ * 4. Externally/Java, cpu.ioPorts[OutputPort].setInterruptNumber(OutputIRQ);
+ * 5. Externally/Java, cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
  * 6. Output from CPU will always run on the Main thread.
  * 7. You may have to launch a Thread to send input to the CPU.
  * 8. To send input to CPU, call: cpu.ioPorts[InputPort].inputToCpu(value);

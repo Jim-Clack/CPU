@@ -13,7 +13,7 @@ import java.util.HashMap;
  *   IMM = Immediate value
  *   REG = Register number
  *   MEM = Memory address
- *   FRA = Memory offset from FP
+ *   FRA = Stack frame offset from FP
  *   (Note1: for 2 Arg Ops: Arg1 is always REG so the AddrMode is for Arg2)
  *   (Note2: for 1 Arg Ops: JMP/CALL defaults to IMM, others to REG)
  */
@@ -23,10 +23,10 @@ public enum Opcode {
     NOOP(1, "NOOP", 0),
     RET(5, "RET", 0),
     IRET(6, "IRET", 0),
+    LEAVE(8, "LEAVE", 0),
+    ILEAVE(9, "ILEAVE", 0),
 
     ENTER(10, "ENTER", 1),
-    LEAVE(11, "LEAVE", 1),
-    ILEAVE(12, "ILEAVE", 1),
     JMP(14, "JMP", 1),
     JMPZE(15, "JMPZE", 1),
     JMPGT(16, "JMPGT", 1),
@@ -44,8 +44,10 @@ public enum Opcode {
     ANDREG(104, "ANDREG", 2),
     XORREG(107, "XORREG", 2),
     ORREG(110, "ORREG", 2),
-    ADDIMM(114, "ADDIMM", 2),
-    ADDREG(115, "ADDREG", 2),
+    ADDIMM(111, "ADDIMM", 2),
+    ADDREG(112, "ADDREG", 2),
+    ADDMEM(113, "ADDMEM", 2),
+    ADDFRA(114, "ADDFRA", 2),
     ADCIMM(116, "ADCIMM", 2),
     ADCREG(117, "ADCREG", 2),
     SUBREG(125, "SUBREG", 2),

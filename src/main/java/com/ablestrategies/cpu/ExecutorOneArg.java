@@ -8,26 +8,12 @@ public class ExecutorOneArg extends ExecutorNoArg {
                     registers[IP].getSignedValue() - 2, opcode.getMnemonic(), argument1);
         }
         switch(opcode) {
-            case ENTER: // FP <= SP then SP <= SP+arg1 then Push R0, R1 ... R10, FP
-                int initialSP = registers[SP].getUnsignedValue(); // NO!
+            case ENTER:
                 for(int i = 0; i <= FP; i++) {
                     push(registers[i]);
                 }
-                registers[SP].set(registers[SP].getUnsignedValue() + argument1);
-            case LEAVE: // leave: Pop FP, R10, R9 ... R0, then SP <= FP, then Pop IP (RET)
-                for(int i = FP; i >= 0; i--) { // NO!
-                    registers[i].set(pop().getUnsignedValue());
-                }
-                registers[SP].set(registers[FP].getUnsignedValue());
-                registers[IP].set(pop());
-                break;
-            case ILEAVE:
-                for(int i = FP; i >= 0; i--) {
-                    registers[i].set(pop().getUnsignedValue());
-                }
-                registers[FP].set(pop().getUnsignedValue());
-                registers[IP].set(pop().getUnsignedValue());
-                enableInterrupts = true;
+                registers[SP].set(registers[SP].getUnsignedValue() - argument1);
+                registers[FP].add(registers[SP].getUnsignedValue());
                 break;
             case PUSH:
                 push(registers[argument1]);

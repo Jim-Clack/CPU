@@ -10,9 +10,9 @@ public abstract class Substrate {
     public static int IV = 14; // interrupt vector (page 0 code pointer)
     public static int IN = 15; // interrupt number (set by interrupter)
 
-    protected final MemoryCell[] memoryCells = new MemoryCell[250];
+    protected final MemoryCell[] memoryCells = new MemoryCell[256];
     protected final Register[] registers = new Register[16];
-    protected final IOPort[] ioPorts = new IOPort[250];
+    protected final IOPort[] ioPorts = new IOPort[256];
     protected boolean enableInterrupts = true;
     protected boolean stepping = false;
 

@@ -18,19 +18,16 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
             case LOADMEM:
                 getRegister(argument1).set(getMemoryCell(argument2).getUnsignedValue());
                 break;
+            case LOADREG:
+                // TODO
+                break;
+            case LOADFRA:
+                // TODO
+                break;
             case STORMEM:
                 getMemoryCell(argument2).set(getRegister(argument1).getUnsignedValue());
-            case SHFTREG:
-                // TODO
-                // lastAdderChanged =
                 break;
-            case ANDREG:
-                // TODO
-                break;
-            case XORREG:
-                // TODO
-                break;
-            case ORREG:
+            case STORFRA:
                 // TODO
                 break;
             case ADDIMM:
@@ -45,16 +42,19 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
             case ADCREG:
                 // TODO
                 break;
+            case SHFTREG:
+                // TODO
+                break;
+            case ANDREG:
+                // TODO
+                break;
+            case XORREG:
+                // TODO
+                break;
+            case ORREG:
+                // TODO
+                break;
             case SUBREG:
-                // TODO
-                break;
-            case LOADREG:
-                // TODO
-                break;
-            case LOADFRA:
-                // TODO
-                break;
-            case STORFRA:
                 // TODO
                 break;
             case INPUT:

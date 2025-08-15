@@ -8,10 +8,19 @@ public class ExecutorNoArg extends Substrate {
                     registers[IP].getUnsignedValue() - 1, opcode.getMnemonic());
         }
         switch(opcode) {
-            case IRET:
-                registers[IP].set(pop().getUnsignedValue());
+            case ILEAVE:
                 enableInterrupts = true;
+                // Fall thru...
+            case LEAVE:
+                registers[SP].set(registers[FP].getUnsignedValue());
+                for(int i = FP; i >= 0; i--) { // NO!
+                    registers[i].set(pop().getUnsignedValue());
+                }
+                registers[IP].set(pop());
                 break;
+            case IRET:
+                enableInterrupts = true;
+                // Fall thru...
             case RET:
                 registers[IP].set(pop().getUnsignedValue());
                 break;

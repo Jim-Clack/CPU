@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Memory Layout using C/C++ calling convention
  *   Code begins at bottom of memory
  *   Stack begins at top of memory
+ *   Dynamic heap can be put in-between
  * Registers:
  *   Register 0-9 - User Registers
  *   Register 10 - Flags: Z, C, S, I + 4 reserved
@@ -33,7 +34,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  *   Loadreg FP, SP
  * Leave:
  *   Loadreg SP, FP
- *   Adjust FP per Arg
  *   PopALl FP...R0
  * Return:
  *   RET

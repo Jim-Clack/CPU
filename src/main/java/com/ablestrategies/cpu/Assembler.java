@@ -22,7 +22,7 @@ import java.util.HashMap;
  *     LabelC: "D"                   # 12: 44 00
  *                                   # 14: -- -- -- --
  *     24:     ENTER 0               # 18: 0a 00
- *             LEAVE                 # 1a: 0b
+ *             LEAVE                 # 1a: 08
  */
 public class Assembler {
 
@@ -46,10 +46,13 @@ public class Assembler {
     }
 
     public void assemble(String program) {
+        System.out.println("ASM Assembling...");
         passNumber = PassNumber.Pass1Assemble;
         processProgram(program);
+        System.out.println("ASM LinkLoading...");
         passNumber = PassNumber.Pass2LinkLoad;
         processProgram(program);
+        System.out.println("Done.");
     }
 
     private void processProgram(String program) {
@@ -127,6 +130,7 @@ public class Assembler {
             address = Integer.parseInt(split[0]);
         } else if (passNumber == PassNumber.Pass1Assemble) { // left-justified label followed by colon
             mapOfLabels.put(split[0].trim().toUpperCase(), address);
+            System.out.printf(" >>> %04x: %s\n", address, split[0]);
         }
         return address;
     }
