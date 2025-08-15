@@ -14,7 +14,8 @@ public class Main {
 
     public Main() { // Functor
         CPU cpu = new CPU();
-        cpu.setStepping(true);
+        cpu.setTracing(true);
+        cpu.setTraceCells(5, 8);
         SampleIoDevice device = new SampleIoDevice(cpu);
         cpu.run();
         try {

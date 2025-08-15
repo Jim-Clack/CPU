@@ -19,23 +19,23 @@ public class Register extends Adder {
         syncFlagRegister();
     }
 
-    public void and(Register register) {
+    public void and(Octet octet) {
         for (int i = 0; i < Octet.NumBits; i++) {
-            super.setBit(i, LogicGate.AND.gate(getBit(i), register.getBit(i)));
+            super.setBit(i, LogicGate.AND.gate(getBit(i), octet.getBit(i)));
         }
         syncFlagRegister();
     }
 
-    public void or(Register register) {
+    public void or(Octet octet) {
         for (int i = 0; i < Octet.NumBits; i++) {
-            super.setBit(i, LogicGate.OR.gate(getBit(i), register.getBit(i)));
+            super.setBit(i, LogicGate.OR.gate(getBit(i), octet.getBit(i)));
         }
         syncFlagRegister();
     }
 
-    public void xor(Register register) {
+    public void xor(Octet octet) {
         for (int i = 0; i < Octet.NumBits; i++) {
-            super.setBit(i, LogicGate.XOR.gate(getBit(i), register.getBit(i)));
+            super.setBit(i, LogicGate.XOR.gate(getBit(i), octet.getBit(i)));
         }
         syncFlagRegister();
     }

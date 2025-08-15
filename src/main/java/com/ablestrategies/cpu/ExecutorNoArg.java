@@ -3,7 +3,7 @@ package com.ablestrategies.cpu;
 public class ExecutorNoArg extends Substrate {
 
     protected boolean execute(Opcode opcode) {
-        if(stepping) {
+        if(tracing) {
             System.out.printf("%03d: %s\n",
                     registers[IP].getUnsignedValue() - 1, opcode.getMnemonic());
         }

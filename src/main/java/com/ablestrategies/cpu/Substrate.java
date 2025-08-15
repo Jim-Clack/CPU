@@ -14,7 +14,7 @@ public abstract class Substrate {
     protected final Register[] registers = new Register[16];
     protected final IOPort[] ioPorts = new IOPort[256];
     protected boolean enableInterrupts = true;
-    protected boolean stepping = false;
+    protected boolean tracing = false;
 
     public void initialize(IInterruptable interruptableALU) {
         for (int i = 0; i < memoryCells.length; i++) {
@@ -35,8 +35,8 @@ public abstract class Substrate {
         registers[IN].set(0);
     }
 
-    public void setStepping(boolean stepping) {
-        this.stepping = stepping;
+    public void setTracing(boolean tracing) {
+        this.tracing = tracing;
     }
 
     protected int getNextOpcode() {

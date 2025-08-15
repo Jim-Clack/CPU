@@ -12,12 +12,12 @@ import java.util.HashMap;
  * continue to the end of line or a semicolon. If a label is left-justified
  * then it's a target instead of a reference. Example code...
  *             # Test                Addr: HexCodes
- *     0:      LOADIMM, 2, LabelA:   # 00: cc 02 05
+ *     0:      LOADIMM, 2, LabelA:   # 00: 8d 02 05
  *             JMP LabelB:           # 03: 0e 08
  *     LabelA: 1, 10, 100            # 05: 01 0a 64
- *     LabelB: CALL 24               # 08: 12 14
+ *     LabelB: CALL 24               # 08: 12 18
  *             "ABC"                 # 0a: 41 42 43 00
- *             LOADMEM 1, LabelC:    # 0e: ce 01 12
+ *             LOADMEM 1, LabelC:    # 0e: 8f 01 12
  *             RET                   # 11: 05
  *     LabelC: "D"                   # 12: 44 00
  *                                   # 14: -- -- -- --
@@ -33,6 +33,7 @@ public class Assembler {
 
     private final HashMap<String, Integer> mapOfLabels = new HashMap<>();
     private final CPU cpu;
+    private int maxAddress;
     private PassNumber passNumber;
     private boolean listHexCodes = true;
     private int expectArgCount = 0;
@@ -45,7 +46,22 @@ public class Assembler {
         this.listHexCodes = listHexCodes;
     }
 
+    public byte[] getMachineCode() {
+        byte[] code = new byte[maxAddress];
+        for(int i = 0; i < maxAddress; i++) {
+            code[i] = (byte)cpu.getMemoryCell(i).getSignedValue();
+        }
+        return code;
+    }
+
+    public void loadMachineCode(byte[] code) {
+        for(int i = 0; i < code.length; i++) {
+            cpu.memoryCells[i].set(code[i]);
+        }
+    }
+
     public void assemble(String program) {
+        maxAddress = 0;
         System.out.println("ASM Assembling...");
         passNumber = PassNumber.Pass1Assemble;
         processProgram(program);
@@ -187,7 +203,8 @@ public class Assembler {
             }
             cpu.getMemoryCell(address).set(value);
         }
-       return ++address;
+        maxAddress = Math.max(maxAddress, ++address);
+        return address;
     }
 
 }

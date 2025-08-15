@@ -18,12 +18,12 @@ public class SampleIoDevice implements ICallableDevice {
     private final String driverCode =
         """
                     # Test                Addr: HexCodes
-            0:      LOADIMM, 2, LabelA:   # 00: cc 02 05
+            0:      LOADIMM, 2, LabelA:   # 00: 8d 02 05
                     JMP LabelB:           # 03: 0e 08
             LabelA: 1, 10, 100            # 05: 01 0a 64
-            LabelB: CALL 24               # 08: 12 14 
+            LabelB: CALL 24               # 08: 12 18 
                     "ABC"                 # 0a: 41 42 43 00
-                    LOADMEM 1, LabelC:    # 0e: ce 01 12
+                    LOADMEM 1, LabelC:    # 0e: 8f 01 12
                     RET                   # 11: 05
             LabelC: "D"                   # 12: 44 00
                                           # 14: -- -- -- --                   

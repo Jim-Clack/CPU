@@ -4,9 +4,9 @@ public class Adder extends Octet {
 
     protected Bit carry = new Bit(0);
 
-    public Octet add(Octet octet) {
+    public Octet add(Octet octet, int prevCarry) {
         HalfAdder halfAdder = new HalfAdder();
-        carry = new Bit(0);
+        carry = new Bit(prevCarry);
         for(int bitNum = 0; bitNum < Octet.NumBits; bitNum++) {
             halfAdder.add(getBit(bitNum), octet.getBit(bitNum));
             Bit step1Carry = halfAdder.getCarry();
@@ -18,12 +18,46 @@ public class Adder extends Octet {
         return this;
     }
 
+    public Octet add(Octet octet) {
+        return add(octet, 0);
+    }
+
+    public Octet adc(Octet octet) {
+        return add(octet, carry.getVal());
+    }
+
     public Octet add(String octet) {
         return add(new Octet(octet));
     }
 
     public Octet add(int octet) {
         return add(new Octet(octet));
+    }
+
+    public Octet adc(String octet) {
+        return adc(new Octet(octet));
+    }
+
+    public Octet adc(int octet) {
+        return adc(new Octet(octet));
+    }
+
+    public Bit increment() {
+        this.add(new Octet(1));
+        return this.carry;
+    }
+
+    public Bit decrement() {
+        this.add(new Octet(-1));
+        return this.carry;
+    }
+
+    public Bit negate() {
+        this.onesCompliment();
+        Bit oldCarry = this.carry;
+        this.add(new Octet(1));
+        this.carry = new Bit(this.carry.getVal() | oldCarry.getVal());
+        return this.carry;
     }
 
     public Bit isCarry() {

@@ -54,7 +54,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class CPU extends ExecutorTwoArgs implements IInterruptable {
 
     private final LinkedBlockingQueue<Integer> interruptNumbers = new LinkedBlockingQueue<>();
-    private int traceCell = 0;
+    private int traceCell1 = 0;
+    private int traceCell2 = memoryCells.length-1;
 
     public CPU() {
         initialize(this);
@@ -76,12 +77,14 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
                     fatal = execute(opcode, argument1, argument2);
                 }
             }
-            if(stepping) {
-                System.out.printf("R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 FL FP SP IP IV IN %02x\n", traceCell);
+            if(tracing) {
+                System.out.printf("R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 FL FP SP IP IV IN %02x %02x\n",
+                        traceCell1, traceCell2);
                 for(Register register : registers) {
                     System.out.printf("%02x ", register.getUnsignedValue());
                 }
-                System.out.printf("%02x\n", memoryCells[traceCell].getUnsignedValue());
+                System.out.printf("%02x ", memoryCells[traceCell1].getUnsignedValue());
+                System.out.printf("%02x\n", memoryCells[traceCell2].getUnsignedValue());
                 System.out.flush();
             }
         }
@@ -97,8 +100,9 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         }
     }
 
-    private void setTraceCell(int traceCell) {
-        this.traceCell = traceCell;
+    public void setTraceCells(int traceCell1, int traceCell2) {
+        this.traceCell1 = traceCell1;
+        this.traceCell2 = traceCell2;
     }
 
     private void handleInterrupts() {
@@ -112,7 +116,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
             System.out.printf("FAILURE to take interrupt " + interruptNumber + "\n" + e.getMessage());
             throw new RuntimeException(e);
         }
-        if(stepping) {
+        if(tracing) {
             System.out.printf("{%03d}: INTERRUPT {%d}\n", registers[IP].getSignedValue() - 1, interruptNumber);
         }
         push(registers[IP]);

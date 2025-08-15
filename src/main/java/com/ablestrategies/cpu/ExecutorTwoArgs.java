@@ -3,14 +3,11 @@ package com.ablestrategies.cpu;
 public class ExecutorTwoArgs extends ExecutorOneArg {
 
     protected boolean execute(Opcode opcode, int argument1, int argument2) {
-        if(stepping) {
+        if(tracing) {
             System.out.printf("%03d: %s %d, %d\n",
                     registers[IP].getSignedValue() - 3,
                         opcode.getMnemonic(), argument1, argument2);
         }
-        Register register;
-        IOPort ioPort;
-        MemoryCell memoryCell;
         switch(opcode) {
             case LOADIMM:
                 getRegister(argument1).set(argument2);
@@ -19,43 +16,61 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getRegister(argument1).set(getMemoryCell(argument2).getUnsignedValue());
                 break;
             case LOADREG:
-                // TODO
+                getRegister(argument1).set(getRegister(argument2).getUnsignedValue());
                 break;
             case LOADFRA:
-                // TODO
+                getRegister(argument1).set(getRegister(FP).getUnsignedValue() + argument2);
+                break;
+            case LOADIND:
+                getRegister(argument1).set(getMemoryCell(getRegister(argument2).getUnsignedValue()));
                 break;
             case STORMEM:
                 getMemoryCell(argument2).set(getRegister(argument1).getUnsignedValue());
                 break;
             case STORFRA:
-                // TODO
+                getMemoryCell(argument2).set(getMemoryCell(getRegister(FP).getUnsignedValue() + argument1));
+                break;
+            case STORIND:
+                getMemoryCell(argument2).set(getMemoryCell(getRegister(argument1).getUnsignedValue()));
                 break;
             case ADDIMM:
-                // TODO
+                getRegister(argument1).add(argument2);
                 break;
             case ADDREG:
-                // TODO
+                getRegister(argument1).add(getRegister(argument2).getUnsignedValue());
+                break;
+            case ADDFRA:
+                getRegister(argument1).add(getRegister(FP).getUnsignedValue() + argument2);
+                break;
+            case ADDIND:
+                getRegister(argument1).add(getMemoryCell(getRegister(argument2).getUnsignedValue()));
                 break;
             case ADCIMM:
-                // TODO
+                getRegister(argument1).adc(argument2);
                 break;
             case ADCREG:
-                // TODO
+                getRegister(argument1).adc(getRegister(argument2).getUnsignedValue());
                 break;
-            case SHFTREG:
-                // TODO
+            case SHFLREG:
+                getRegister(argument1).shiftLeft(getRegister(argument2).getUnsignedValue());
+                break;
+            case SHFRREG:
+                getRegister(argument1).shiftRight(getRegister(argument2).getUnsignedValue());
                 break;
             case ANDREG:
-                // TODO
+                getRegister(argument1).and(getRegister(argument2));
                 break;
             case XORREG:
-                // TODO
+                getRegister(argument1).xor(getRegister(argument2));
                 break;
             case ORREG:
-                // TODO
+                getRegister(argument1).or(getRegister(argument2));
+                break;
+            case SUBIMM:
+                getRegister(argument1).add(-argument2);
                 break;
             case SUBREG:
-                // TODO
+                getRegister(argument1).add(-getRegister(argument2).getUnsignedValue());
                 break;
             case INPUT:
                 registers[argument1].set(getIoPort(argument2).getUnsignedValue());

@@ -3,7 +3,7 @@ package com.ablestrategies.cpu;
 public class ExecutorOneArg extends ExecutorNoArg {
 
     protected boolean execute(Opcode opcode, int argument1) {
-        if(stepping) {
+        if(tracing) {
             System.out.printf("%03d: %s %d\n",
                     registers[IP].getSignedValue() - 2, opcode.getMnemonic(), argument1);
         }
@@ -29,28 +29,34 @@ public class ExecutorOneArg extends ExecutorNoArg {
                 registers[IP].set(argument1);
                 break;
             case JMPZE:
-                // TODO
+                if(getRegister(FLAGS).isZero().getVal() > 0) {
+                    registers[IP].set(argument1);
+                }
                 break;
             case JMPGT:
-                // TODO
+                if(getRegister(FLAGS).isNegative().getVal() == 0) {
+                    registers[IP].set(argument1);
+                }
                 break;
             case JMPLT:
-                // TODO
+                if(getRegister(FLAGS).isNegative().getVal() > 0) {
+                    registers[IP].set(argument1);
+                }
                 break;
             case JMPREG:
-                // TODO
+                registers[IP].set(getRegister(argument1).getUnsignedValue());
                 break;
             case NEGATE:
-                // TODO
+                getRegister(argument1).negate();
                 break;
             case INVERT:
-                // TODO
+                getRegister(argument1).onesCompliment();
                 break;
             case INCR:
-                // TODO
+                getRegister(argument1).increment();
                 break;
             case DECR:
-                // TODO
+                getRegister(argument1).decrement();
                 break;
             default:
                 return true;
