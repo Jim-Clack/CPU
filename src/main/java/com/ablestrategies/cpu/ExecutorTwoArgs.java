@@ -19,6 +19,7 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getRegister(argument1).set(getRegisterValue(argument2));
                 break;
             case LOADFRA:
+                String s1 = "Load " + argument1 + " from mem " + getMemoryCellValueFrameLocal(argument2);
                 getRegister(argument1).set(getMemoryCellValueFrameLocal(argument2));
                 break;
             case LOADIND:
@@ -40,6 +41,7 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getRegister(argument1).add(getRegisterValue(argument2));
                 break;
             case ADDFRA:
+                String s2 = "From " + argument1 + " add mem " + getMemoryCellValueFrameLocal(argument2);
                 getRegister(argument1).add(getMemoryCellValueFrameLocal(argument2));
                 break;
             case ADDIND:

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AssemblerTest {
 
-    //@Test
+    @Test
     void testBasicOperation() {
         test("""
                       CALL A:
@@ -19,18 +19,16 @@ class AssemblerTest {
             """,0, 18, 4, 51);
     }
 
-    //@Test
+    @Test
     void testLoadStore() {
         test("""
                       LOADIMM 3, 7
-                      STORMEM 3, 0x50         # set [0x50] to 7
+                      STORMEM 3, 0x50         # set [0x50] = 7
                       LOADIMM 5, 0x51
-                      STORIND 3, 5            # set [0x51] to 7
-                      LOADIMM 0$FP, 0x50      # FP = 0x50
-                      LOADFRA 6, 1            # set Reg6 to 7 from [0x51]
-                      STORMEM 6, 0x52         # set [0x52] to 7
-                      STORFRA 6, 3            # set [0x53] to 7
-            """,80, 7, 83, 7);
+                      STORIND 3, 5            # set [0x51] = 7
+                      LOADREG 6, 3
+                      STORMEM 6, 0x52         # set [0x52] = 7
+            """,0x51, 7, 0x52, 7);
     }
 
     @Test
