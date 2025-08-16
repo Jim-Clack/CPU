@@ -21,6 +21,7 @@ public enum Opcode {
 
     INVALID(0, "INVALID", 0),
     NOOP(1, "NOOP", 0),
+    TRAP(2, "TRAP", 0),
     RET(5, "RET", 0),
     IRET(6, "IRET", 0),
     LEAVE(8, "LEAVE", 0),
@@ -65,13 +66,13 @@ public enum Opcode {
     INPUT(201, "INPUT", 2),
     OUTPUT(211, "OUTPUT", 2);
 
-    public static int LongestMnemonicLgt = 7;
+    public static final int LongestMnemonicLgt = 7;
     private final int value;
     private final String mnemonic;
     private final int numArgs;
 
-    private static HashMap<Integer, Opcode> mapByValue = new HashMap<>();
-    private static HashMap<String, Opcode> mapByMnemonic = new HashMap<>();
+    private static final HashMap<Integer, Opcode> mapByValue = new HashMap<>();
+    private static final HashMap<String, Opcode> mapByMnemonic = new HashMap<>();
 
     Opcode(int value, String mnemonic, int numArgs) {
         this.value = value;
@@ -111,7 +112,7 @@ public enum Opcode {
 
     @Override
     public String toString() {
-        return mnemonic + "(" + value + ")";
+        return mnemonic;
     }
 
     private static void ensureMapsAreInitialized() {

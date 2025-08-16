@@ -2,6 +2,13 @@ package com.ablestrategies.cpu;
 
 public abstract class Substrate {
 
+    public enum RunMode {
+        IDLE,
+        RUNNING,
+        TRAP,
+        FATAL;
+    };
+
     // reserved registers
     public static int FLAGS = 10; // 1=zero, 2=carry, 4=sign, 8=enableIrq
     public static int FP = 11; // frame pointer (within stack)
@@ -15,6 +22,7 @@ public abstract class Substrate {
     protected final IOPort[] ioPorts = new IOPort[256];
     protected boolean enableInterrupts = true;
     protected boolean tracing = false;
+    protected RunMode runMode = RunMode.IDLE;
 
     public void initialize(IInterruptable interruptableALU) {
         for (int i = 0; i < memoryCells.length; i++) {
@@ -39,33 +47,57 @@ public abstract class Substrate {
         this.tracing = tracing;
     }
 
-    protected int getNextOpcode() {
-        Opcode opcode = Opcode.opcode(memoryCells[registers[IP].getUnsignedValue()].getUnsignedValue());
-        registers[IP].set(registers[IP].getUnsignedValue() + 1);
-        return opcode.getValue();
+    protected int getNextProgramByte() {
+        int arg = memoryCells[registers[IP].getUnsignedValue()].getUnsignedValue();
+        registers[IP].increment();
+        return arg;
     }
 
     protected void push(Octet arg) {
         memoryCells[registers[SP].getUnsignedValue()].set(arg.getUnsignedValue());
-        registers[SP].set(registers[SP].getUnsignedValue() - 1);
+        registers[SP].decrement();
     }
 
     protected void push(int arg) {
-        memoryCells[registers[SP].getSignedValue()].set(arg);
-        registers[SP].set(registers[SP].getSignedValue() - 1);
+        memoryCells[registers[SP].getUnsignedValue()].set(arg);
+        registers[SP].decrement();
     }
 
     protected Octet pop() {
-        registers[SP].set(registers[SP].getSignedValue() + 1);
-        return registers[SP];
+        registers[SP].increment();
+        return getMemoryCell(registers[SP].getUnsignedValue());
     }
 
     public Register getRegister(int registerNum) {
         return registers[registerNum];
     }
 
+    public int getRegisterValue(int registerNum) {
+        return getRegister(registerNum).getUnsignedValue();
+    }
+
     public MemoryCell getMemoryCell(int cellNum) {
         return memoryCells[cellNum];
+    }
+
+    public int getMemoryCellValue(int cellNum) {
+        return memoryCells[cellNum].getUnsignedValue();
+    }
+
+    public MemoryCell getMemoryCellRegIndirect(int regNum) {
+        return getMemoryCell(getRegister(regNum).getUnsignedValue());
+    }
+
+    public int getMemoryCellValueRegIndirect(int regNum) {
+        return getMemoryCellValue(getRegister(regNum).getUnsignedValue());
+    }
+
+    public MemoryCell getMemoryCellFrameLocal(int offset) {
+        return getMemoryCell(getRegister(FP).getUnsignedValue() + offset);
+    }
+
+    public int getMemoryCellValueFrameLocal(int offset) {
+        return getMemoryCellValue(getRegister(FP).getUnsignedValue() + offset);
     }
 
     public IOPort getIoPort(int portNum) {

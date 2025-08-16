@@ -92,6 +92,12 @@ public class FlagRegister extends Register {
         return substrate.registers[(super.getUnsignedValue() & 0x0F) >> 4];
     }
 
+    @Override
+    public String toString() {
+        syncToSubstrate();
+        return super.toString();
+    }
+
     ///  The following methods do not make sense for a destination FlagRegister
 
     public Octet onesCompliment() {

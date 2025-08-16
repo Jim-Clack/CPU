@@ -2,9 +2,9 @@ package com.ablestrategies.cpu;
 
 public class ExecutorOneArg extends ExecutorNoArg {
 
-    protected boolean execute(Opcode opcode, int argument1) {
+    protected RunMode execute(Opcode opcode, int argument1) {
         if(tracing) {
-            System.out.printf("%03d: %s %d\n",
+            System.out.printf("%02x: %s %02x\n",
                     registers[IP].getSignedValue() - 2, opcode.getMnemonic(), argument1);
         }
         switch(opcode) {
@@ -59,9 +59,9 @@ public class ExecutorOneArg extends ExecutorNoArg {
                 getRegister(argument1).decrement();
                 break;
             default:
-                return true;
+                return RunMode.FATAL;
         }
-        return false;
+        return runMode;
     }
 
 }

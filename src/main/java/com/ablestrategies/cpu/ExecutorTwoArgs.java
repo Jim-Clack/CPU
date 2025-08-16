@@ -2,9 +2,9 @@ package com.ablestrategies.cpu;
 
 public class ExecutorTwoArgs extends ExecutorOneArg {
 
-    protected boolean execute(Opcode opcode, int argument1, int argument2) {
+    protected RunMode execute(Opcode opcode, int argument1, int argument2) {
         if(tracing) {
-            System.out.printf("%03d: %s %d, %d\n",
+            System.out.printf("%02x: %s %02x, %02x\n",
                     registers[IP].getSignedValue() - 3,
                         opcode.getMnemonic(), argument1, argument2);
         }
@@ -13,49 +13,49 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getRegister(argument1).set(argument2);
                 break;
             case LOADMEM:
-                getRegister(argument1).set(getMemoryCell(argument2).getUnsignedValue());
+                getRegister(argument1).set(getMemoryCellValue(argument2));
                 break;
             case LOADREG:
-                getRegister(argument1).set(getRegister(argument2).getUnsignedValue());
+                getRegister(argument1).set(getRegisterValue(argument2));
                 break;
             case LOADFRA:
-                getRegister(argument1).set(getRegister(FP).getUnsignedValue() + argument2);
+                getRegister(argument1).set(getMemoryCellValueFrameLocal(argument2));
                 break;
             case LOADIND:
-                getRegister(argument1).set(getMemoryCell(getRegister(argument2).getUnsignedValue()));
+                getRegister(argument1).set(getMemoryCellValueRegIndirect(argument2));
                 break;
             case STORMEM:
-                getMemoryCell(argument2).set(getRegister(argument1).getUnsignedValue());
+                getMemoryCell(argument2).set(getRegisterValue(argument1));
                 break;
             case STORFRA:
-                getMemoryCell(argument2).set(getMemoryCell(getRegister(FP).getUnsignedValue() + argument1));
+                getMemoryCellFrameLocal(argument2).set(getRegisterValue(argument1));
                 break;
             case STORIND:
-                getMemoryCell(argument2).set(getMemoryCell(getRegister(argument1).getUnsignedValue()));
+                getMemoryCellRegIndirect(argument2).set(getRegisterValue(argument1));
                 break;
             case ADDIMM:
                 getRegister(argument1).add(argument2);
                 break;
             case ADDREG:
-                getRegister(argument1).add(getRegister(argument2).getUnsignedValue());
+                getRegister(argument1).add(getRegisterValue(argument2));
                 break;
             case ADDFRA:
-                getRegister(argument1).add(getRegister(FP).getUnsignedValue() + argument2);
+                getRegister(argument1).add(getMemoryCellValueFrameLocal(argument2));
                 break;
             case ADDIND:
-                getRegister(argument1).add(getMemoryCell(getRegister(argument2).getUnsignedValue()));
+                getRegister(argument1).add(getMemoryCellValueRegIndirect(argument2));
                 break;
             case ADCIMM:
                 getRegister(argument1).adc(argument2);
                 break;
             case ADCREG:
-                getRegister(argument1).adc(getRegister(argument2).getUnsignedValue());
+                getRegister(argument1).adc(getRegisterValue(argument2));
                 break;
             case SHFLREG:
-                getRegister(argument1).shiftLeft(getRegister(argument2).getUnsignedValue());
+                getRegister(argument1).shiftLeft(getRegisterValue(argument2));
                 break;
             case SHFRREG:
-                getRegister(argument1).shiftRight(getRegister(argument2).getUnsignedValue());
+                getRegister(argument1).shiftRight(getRegisterValue(argument2));
                 break;
             case ANDREG:
                 getRegister(argument1).and(getRegister(argument2));
@@ -70,7 +70,7 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getRegister(argument1).add(-argument2);
                 break;
             case SUBREG:
-                getRegister(argument1).add(-getRegister(argument2).getUnsignedValue());
+                getRegister(argument1).add(-getRegisterValue(argument2));
                 break;
             case INPUT:
                 registers[argument1].set(getIoPort(argument2).getUnsignedValue());
@@ -79,10 +79,9 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 ioPorts[argument1].set(getRegister(argument2).getUnsignedValue());
                 break;
             default:
-                return true;
+                return RunMode.FATAL;
         }
-
-        return false;
+        return runMode;
     }
 
 }

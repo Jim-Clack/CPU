@@ -76,4 +76,9 @@ public class Register extends Adder {
         }
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
 }

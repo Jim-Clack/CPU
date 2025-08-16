@@ -2,9 +2,9 @@ package com.ablestrategies.cpu;
 
 public class ExecutorNoArg extends Substrate {
 
-    protected boolean execute(Opcode opcode) {
+    protected RunMode execute(Opcode opcode) {
         if(tracing) {
-            System.out.printf("%03d: %s\n",
+            System.out.printf("%02x: %s\n",
                     registers[IP].getUnsignedValue() - 1, opcode.getMnemonic());
         }
         switch(opcode) {
@@ -24,14 +24,16 @@ public class ExecutorNoArg extends Substrate {
             case RET:
                 registers[IP].set(pop().getUnsignedValue());
                 break;
+            case TRAP:
+                return RunMode.TRAP;
             case NOOP:
                 break;
             case INVALID:
             default:
-                return true;
+                return RunMode.FATAL;
         }
 
-        return false;
+        return runMode;
     }
 
 }

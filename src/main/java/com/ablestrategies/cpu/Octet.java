@@ -110,8 +110,8 @@ public class Octet {
     public int getUnsignedValue() {
         int accumulator = 0;
         int multiplier = 1;
-        for (int i = NumBits; i > 0; i--) {
-            accumulator += content[i-1].getVal() * multiplier;
+        for (int i = MaxBitNum; i >= 0; i--) {
+            accumulator += content[i].getVal() * multiplier;
             multiplier *= 2;
         }
         return accumulator;

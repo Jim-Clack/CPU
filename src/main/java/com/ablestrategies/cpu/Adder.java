@@ -72,4 +72,9 @@ public class Adder extends Octet {
 
     public Bit shiftRight(int howFar) { carry = super.shiftRight(howFar); return carry; }
 
+    @Override
+    public String toString() {
+        return super.toString();
     }
+
+}

@@ -10,18 +10,20 @@ import java.util.HashMap;
  * is omitted, it increments starting from zero. Opcodes are not case-
  * sensitive. Spaces are optional and ignored. Comments begin with # and
  * continue to the end of line or a semicolon. If a label is left-justified
- * then it's a target instead of a reference. Example code...
+ * then it's a target instead of a reference. ConstantArgs/Bytes can start
+ * with "0x" if they are hex instead of decimal, or they can start with "0$"
+ * if they are a register name, like 0$FP. Example code...
  *             # Test                Addr: HexCodes
  *     0:      LOADIMM, 2, LabelA:   # 00: 8d 02 05
  *             JMP LabelB:           # 03: 0e 08
  *     LabelA: 1, 10, 100            # 05: 01 0a 64
- *     LabelB: CALL 24               # 08: 12 18
+ *     LabelB: CALL 0x18             # 08: 12 18
  *             "ABC"                 # 0a: 41 42 43 00
  *             LOADMEM 1, LabelC:    # 0e: 8f 01 12
  *             RET                   # 11: 05
  *     LabelC: "D"                   # 12: 44 00
  *                                   # 14: -- -- -- --
- *     24:     ENTER 0               # 18: 0a 00
+ *     0x18:   ENTER 0               # 18: 0a 00
  *             LEAVE                 # 1a: 08
  */
 public class Assembler {
@@ -142,8 +144,8 @@ public class Assembler {
     }
 
     private int parseTarget(int address, String[] split) {
-        if (Character.isDigit(split[0].charAt(0))) { // addreee followed by colon
-            address = Integer.parseInt(split[0]);
+        if (Character.isDigit(split[0].charAt(0))) { // address followed by colon
+            address = parseNumeric(split[0], false);
         } else if (passNumber == PassNumber.Pass1Assemble) { // left-justified label followed by colon
             mapOfLabels.put(split[0].trim().toUpperCase(), address);
             System.out.printf(" >>> %04x: %s\n", address, split[0]);
@@ -179,7 +181,7 @@ public class Assembler {
     private int parseOpcodeOrByte(String deposit, int address, int value) {
         if(Character.isDigit(deposit.charAt(0))) {
             try {
-                value = Integer.parseInt(deposit);
+                value = parseNumeric(deposit, true);
             } catch (NumberFormatException ex) {
                 System.out.println("ASM ERROR: Expected numeric at address " + address);
             }
@@ -205,6 +207,33 @@ public class Assembler {
         }
         maxAddress = Math.max(maxAddress, ++address);
         return address;
+    }
+
+    private int parseNumeric(String stringVal, boolean isRegisterNum) throws NumberFormatException {
+        if (stringVal.trim().isEmpty()) {
+            return 0;
+        }
+        int value = 0;
+        if(isRegisterNum && stringVal.startsWith("0$")) {
+            stringVal = stringVal.substring(2);
+            switch (stringVal) {
+                case "FLAGS": value = Substrate.FLAGS; break;
+                case "FP": value = Substrate.FP; break;
+                case "SP": value = Substrate.SP; break;
+                case "IP": value = Substrate.IP; break;
+                case "IV": value = Substrate.IV; break;
+                case "IN": value = Substrate.IN; break;
+            }
+        } else if(stringVal.toUpperCase().startsWith("0X")) {
+            stringVal = stringVal.substring(2);
+            if(stringVal.endsWith(":")) {
+                stringVal = stringVal.substring(0, stringVal.length() - 1);
+            }
+            value = Integer.parseInt(stringVal, 16);
+        } else {
+            value = Integer.parseInt(stringVal);
+        }
+        return value;
     }
 
 }

@@ -59,22 +59,27 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
 
     public CPU() {
         initialize(this);
+        runMode = RunMode.IDLE;
     }
 
-    public void run() {
-        boolean fatal = false;
-        while(!fatal) {
+    public RunMode run(boolean resume) {
+        if(resume && runMode != RunMode.TRAP) {
+            System.out.println("CPU cannot resume as it was not paused by a TRAP opcode");
+            return runMode;
+        }
+        runMode = RunMode.RUNNING;
+        while(runMode == RunMode.RUNNING) {
             handleInterrupts();
-            Opcode opcode = Opcode.opcode(getNextOpcode());
+            Opcode opcode = Opcode.opcode(getNextProgramByte());
             if (opcode.getNumArgs() < 1) {
-                fatal = execute(opcode);
+                runMode = execute(opcode);
             } else {
-                int argument1 = getNextOpcode();
+                int argument1 = getNextProgramByte();
                 if (opcode.getNumArgs() < 2) {
-                    fatal = execute(opcode, argument1);
+                    runMode = execute(opcode, argument1);
                 } else {
-                    int argument2 = getNextOpcode();
-                    fatal = execute(opcode, argument1, argument2);
+                    int argument2 = getNextProgramByte();
+                    runMode = execute(opcode, argument1, argument2);
                 }
             }
             if(tracing) {
@@ -88,7 +93,8 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
                 System.out.flush();
             }
         }
-        System.out.printf("{%03d}: FATAL\n", registers[IP].getSignedValue() - 1);
+        System.out.printf("%02x: %s - EXECUTION STOPPED\n", registers[IP].getSignedValue(), runMode.name());
+        return runMode;
     }
 
     public void sendInterrupt(int interruptNumber) {
@@ -117,7 +123,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
             throw new RuntimeException(e);
         }
         if(tracing) {
-            System.out.printf("{%03d}: INTERRUPT {%d}\n", registers[IP].getSignedValue() - 1, interruptNumber);
+            System.out.printf("%02x: INTERRUPT %d\n", registers[IP].getSignedValue() - 1, interruptNumber);
         }
         push(registers[IP]);
         registers[IN].set(interruptNumber);

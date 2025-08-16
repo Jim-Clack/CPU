@@ -1,11 +1,5 @@
 package com.ablestrategies.cpu;
 
-/**
- * TODO
- * ENTER/LEAVE/ILEAVE: set SP<-FP, pop(FP+All), RET
- * Implement remaining Opcodes
- * Include doc PDF in repo
- */
 public class Main {
 
     public static void main(String[] args) {
@@ -17,7 +11,7 @@ public class Main {
         cpu.setTracing(true);
         cpu.setTraceCells(5, 8);
         SampleIoDevice device = new SampleIoDevice(cpu);
-        cpu.run();
+        cpu.run(false);
         try {
             device.getSimulatorThread().join();
         } catch (InterruptedException e) {
