@@ -16,13 +16,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  *   Register 14 - IV: Interrupt Vector
  *   Register 15 - IN: Interrupt Number
  * Stack Frame:
- *   Method Parameters (top of stack)
+ *   Method Parameters (top of stack) [FP+13+arg] arg=1, 2, ...
  *   Return IP (next instruction after CALL)
  *   Preserved Previous R0...R9
  *   Preserved Previous Flags
  *   Preserved Previous FP
  *   (Current FP points here)
- *   Local Variables (size = arg to ENTER/LEAVE)
+ *   Local Variables (count = ENTER Arg1) [FP-var] var=0, -1, -2, ...
  *   (SP starts out here and grows downward)
  *   Temporaries
  * Call:

@@ -63,7 +63,6 @@ public class Assembler {
     }
 
     public void assemble(String program) {
-        maxAddress = 0;
         System.out.println("ASM Assembling...");
         passNumber = PassNumber.Pass1Assemble;
         processProgram(program);
@@ -78,6 +77,7 @@ public class Assembler {
         boolean comment = false;
         boolean inString = false;
         StringBuilder sb = new StringBuilder();
+        maxAddress = 0;
         for(char ch : program.toCharArray()) {
             if(ch == '\"' && !comment) { // quoted string
                 if(inString) {
@@ -199,6 +199,9 @@ public class Assembler {
 
     private int emit(int address, int value) {
         if(passNumber == PassNumber.Pass2LinkLoad) {
+            if(address < maxAddress) {
+                System.out.println("ASM ERROR: Lower address may overwrite code " + address);
+            }
             if(listHexCodes) {
                 System.out.printf(" >>> %04x: %02x \n", address, value);
                 System.out.flush();
@@ -215,7 +218,7 @@ public class Assembler {
         }
         int value = 0;
         if(isRegisterNum && stringVal.startsWith("0$")) {
-            stringVal = stringVal.substring(2);
+            stringVal = stringVal.substring(2).trim();
             switch (stringVal) {
                 case "FLAGS": value = Substrate.FLAGS; break;
                 case "FP": value = Substrate.FP; break;

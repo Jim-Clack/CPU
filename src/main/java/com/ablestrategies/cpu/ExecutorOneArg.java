@@ -12,8 +12,8 @@ public class ExecutorOneArg extends ExecutorNoArg {
                 for(int i = 0; i <= FP; i++) {
                     push(registers[i]);
                 }
+                registers[FP].set(registers[SP].getUnsignedValue());
                 registers[SP].set(registers[SP].getUnsignedValue() - argument1);
-                registers[FP].add(registers[SP].getUnsignedValue());
                 break;
             case PUSH:
                 push(registers[argument1]);

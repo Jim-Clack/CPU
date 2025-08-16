@@ -93,10 +93,16 @@ public abstract class Substrate {
     }
 
     public MemoryCell getMemoryCellFrameLocal(int offset) {
+        if(offset > 0) {
+            offset += 13 * Octet.NumBits/8;
+        }
         return getMemoryCell(getRegister(FP).getUnsignedValue() + offset);
     }
 
     public int getMemoryCellValueFrameLocal(int offset) {
+        if(offset > 0) {
+            offset += 13 * Octet.NumBits/8;
+        }
         return getMemoryCellValue(getRegister(FP).getUnsignedValue() + offset);
     }
 
