@@ -16,9 +16,10 @@ public abstract class Substrate {
     public static int IP = 13; // instruction pointer (program counter)
     public static int IV = 14; // interrupt vector (page 0 code pointer)
     public static int IN = 15; // interrupt number (set by interrupter)
+    public static int SCRATCH = 16; // Not acccessible to programmer/user
 
     protected final MemoryCell[] memoryCells = new MemoryCell[256];
-    protected final Register[] registers = new Register[16];
+    protected final Register[] registers = new Register[SCRATCH + 1];
     protected final IOPort[] ioPorts = new IOPort[256];
     protected boolean enableInterrupts = true;
     protected boolean tracing = false;
@@ -28,14 +29,21 @@ public abstract class Substrate {
         for (int i = 0; i < memoryCells.length; i++) {
             memoryCells[i] = new MemoryCell();
         }
+
         FlagRegister flagRegister = new FlagRegister(this);
-        for (int i = 0; i < registers.length; i++) {
+        for (int i = 0; i < FLAGS; i++) {
             registers[i] = new Register(flagRegister);
         }
         registers[FLAGS] = flagRegister;
+        for (int i = FLAGS + 1; i < SCRATCH; i++) {
+            registers[i] = new Register(null);
+        }
+        registers[SCRATCH] = new Register(flagRegister);
+
         for (int i = 0; i < ioPorts.length; i++) {
             ioPorts[i] = new IOPort(interruptableALU);
         }
+
         registers[IP].set(0);
         registers[SP].set(memoryCells.length - 1);
         registers[FP].set(memoryCells.length - 1);

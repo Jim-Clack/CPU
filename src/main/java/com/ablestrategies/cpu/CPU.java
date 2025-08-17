@@ -22,7 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *   Preserved Previous Flags
  *   Preserved Previous FP
  *   (Current FP points here)
- *   Local Variables (count = ENTER Arg1) [FP-var] var=0, -1, -2, ...
+ *   Local Variables (size=ENTER Arg1) [FP-var] var=0, -1, -2, ...
  *   (SP starts out here and grows downward)
  *   Temporaries
  * Call:
@@ -30,8 +30,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  *   CALL xxxx
  * Enter:
  *   PushAll R0...FP
- *   Adjust FP per Arg
  *   Loadreg FP, SP
+ *   Adjust SP per Arg
  * Leave:
  *   Loadreg SP, FP
  *   PopALl FP...R0

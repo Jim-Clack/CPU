@@ -15,31 +15,44 @@ public class ExecutorOneArg extends ExecutorNoArg {
                 registers[FP].set(registers[SP].getUnsignedValue());
                 registers[SP].set(registers[SP].getUnsignedValue() - argument1);
                 break;
-            case PUSH:
+            case TESTSET:
+                while(getMemoryCellValue(argument1) > 0) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                }
+                getMemoryCell(argument1).set(1);
+                break;
+            case ZEROMEM:
+                getMemoryCell(argument1).set(0);
+                break;
+            case PUSHREG:
                 push(registers[argument1]);
                 break;
-            case POP:
+            case POPREG:
                 registers[argument1].set(pop());
                 break;
-            case JMP:
+            case JMPIMM:
                 registers[IP].set(argument1);
                 break;
-            case CALL:
+            case CALLIMM:
                 push(registers[IP]);
                 registers[IP].set(argument1);
                 break;
-            case JMPZE:
-                if(getRegister(FLAGS).isZero().getVal() > 0) {
+            case JZEIMM:
+                if(Flags.ZERO.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
-            case JMPGT:
-                if(getRegister(FLAGS).isNegative().getVal() == 0) {
+            case JGTIMM:
+                if(!Flags.SIGN.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
-            case JMPLT:
-                if(getRegister(FLAGS).isNegative().getVal() > 0) {
+            case JLTIMM:
+                if(Flags.SIGN.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
@@ -52,10 +65,10 @@ public class ExecutorOneArg extends ExecutorNoArg {
             case INVERT:
                 getRegister(argument1).onesCompliment();
                 break;
-            case INCR:
+            case INCREG:
                 getRegister(argument1).increment();
                 break;
-            case DECR:
+            case DECREG:
                 getRegister(argument1).decrement();
                 break;
             default:

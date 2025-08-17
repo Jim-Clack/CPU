@@ -3,24 +3,26 @@ package com.ablestrategies.cpu;
 import java.util.HashMap;
 
 /**
- * Opcode Mnemonic Key:
- *   Operation + [Condition] + [AddrMode]
- * Conditions:
- *   ZE
- *   LT
- *   GT
- * AddrModes:
- *   IMM = Immediate value
- *   REG = Register number
- *   MEM = Memory address
- *   FRA = Stack frame offset from FP
- *   (Note1: for 2 Arg Ops: Arg1 is always REG so the AddrMode is for Arg2)
- *   (Note2: for 1 Arg Ops: JMP/CALL defaults to IMM, others to REG)
+ * Opcode Mnemonic Meaning:
+ *   Operation[Condition][AddrMode]
+ * Condition:
+ *   ZE = Zero or Equal
+ *   LT = Less than
+ *   GT = Greater than
+ * AddrMode:
+ *   IMM = Immediate value - value is Arg2
+ *   REG = Register number - designated register Arg2
+ *   IND = Indirect - memory as specified by the designated register Arg2
+ *   MEM = Memory address - memory as specified by Arg2
+ *   FRA = Stack frame offset from FP (only use after an ENTER opcode) Note3
+ *     Note1: for 2 Arg Ops: Arg1 is always REG so the AddrMode is for Arg2
+ *     Note2: AddrMode for source, except STORxxx where it's destination
+ *     Note3: FRA AddrMode 1, 2, 3... for params, 0, -1, -2... for locals
  */
 public enum Opcode {
 
-    INVALID(0, "INVALID", 0),
-    NOOP(1, "NOOP", 0),
+    NOOP(0, "NOOP", 0),
+    INVALID(1, "INVALID", 0),
     TRAP(2, "TRAP", 0),
     RET(5, "RET", 0),
     IRET(6, "IRET", 0),
@@ -28,18 +30,20 @@ public enum Opcode {
     ILEAVE(9, "ILEAVE", 0),
 
     ENTER(10, "ENTER", 1),
-    JMP(14, "JMP", 1),
-    JMPZE(15, "JMPZE", 1),
-    JMPGT(16, "JMPGT", 1),
-    JMPLT(17, "JMPLT", 1),
-    CALL(18, "CALL", 1),
+    JMPIMM(14, "JMPIMM", 1),
+    JZEIMM(15, "JZEIMM", 1),
+    JGTIMM(16, "JGTIMM", 1),
+    JLTIMM(17, "JLTIMM", 1),
+    CALLIMM(18, "CALLIMM", 1),
     JMPREG(21, "JMPREG", 1),
-    PUSH(31, "PUSH", 1),
-    POP(32, "POP", 1),
+    PUSHREG(31, "PUSHREG", 1),
+    POPREG(32, "POPREG", 1),
     NEGATE(35, "NEGATE", 1),
     INVERT(36, "INVERT", 1),
-    INCR(38, "INCR", 1),
-    DECR(39, "DECR", 1),
+    INCREG(38, "INCREG", 1),
+    DECREG(39, "DECREG", 1),
+    TESTSET(50, "TESTSET", 1 ),
+    ZEROMEM(51, "ZEROMEM", 1),
 
     SHFLREG(100, "SHFLREG", 2),
     SHFRREG(101, "SHFRREG", 2),
@@ -55,6 +59,8 @@ public enum Opcode {
     ADCREG(122, "ADCREG", 2),
     SUBIMM(131, "SUBIMM", 2),
     SUBREG(132, "SUBREG", 2),
+    CMPIMM(135, "CMPIMM", 2),
+    CMPREG(136, "CMPREG", 2),
     LOADIMM(141, "LOADIMM", 2),
     LOADREG(142, "LOADREG", 2),
     LOADMEM(143, "LOADMEM", 2),

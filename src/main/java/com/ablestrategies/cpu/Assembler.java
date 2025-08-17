@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 /**
  * Quickly two-pass Assembler/LinkLoader.
+ * (See AssemblerTest.java for examples)
  * Pass in a string that contains a series of the following statements:
  *  [label:] [address:] [[opcode[,]] [arg[,]...] [label:] [byte[,]...] ["string"]
  * These can be newline-delimited or semicolon-delimited. If the address
@@ -12,12 +13,13 @@ import java.util.HashMap;
  * continue to the end of line or a semicolon. If a label is left-justified
  * then it's a target instead of a reference. ConstantArgs/Bytes can start
  * with "0x" if they are hex instead of decimal, or they can start with "0$"
- * if they are a register name, like 0$FP. Example code...
+ * or "$" if they are a register name, like $FP. Operations on system
+ * registers do not set ZE/GT/LT flags. Example code...
  *             # Test                Addr: HexCodes
  *     0:      LOADIMM, 2, LabelA:   # 00: 8d 02 05
- *             JMP LabelB:           # 03: 0e 08
+ *             JMPIMM LabelB:        # 03: 0e 08
  *     LabelA: 1, 10, 100            # 05: 01 0a 64
- *     LabelB: CALL 0x18             # 08: 12 18
+ *     LabelB: CALLIMM 0x18          # 08: 12 18
  *             "ABC"                 # 0a: 41 42 43 00
  *             LOADMEM 1, LabelC:    # 0e: 8f 01 12
  *             RET                   # 11: 05
@@ -35,6 +37,8 @@ public class Assembler {
 
     private final HashMap<String, Integer> mapOfLabels = new HashMap<>();
     private final CPU cpu;
+    private int address;
+    private int errorCount;
     private int maxAddress;
     private PassNumber passNumber;
     private boolean listHexCodes = true;
@@ -62,22 +66,26 @@ public class Assembler {
         }
     }
 
-    public void assemble(String program) {
+    public int assemble(String program) {
         System.out.println("ASM Assembling...");
         passNumber = PassNumber.Pass1Assemble;
-        processProgram(program);
-        System.out.println("ASM LinkLoading...");
-        passNumber = PassNumber.Pass2LinkLoad;
-        processProgram(program);
+        boolean ok = processProgram(program);
+        if(ok) {
+            System.out.println("ASM LinkLoading...");
+            passNumber = PassNumber.Pass2LinkLoad;
+            ok = processProgram(program);
+        }
         System.out.println("Done.");
+        return errorCount;
     }
 
-    private void processProgram(String program) {
-        int address = 0;
+    private boolean processProgram(String program) {
         boolean comment = false;
         boolean inString = false;
         StringBuilder sb = new StringBuilder();
+        address = 0;
         maxAddress = 0;
+        errorCount = 0;
         for(char ch : program.toCharArray()) {
             if(ch == '\"' && !comment) { // quoted string
                 if(inString) {
@@ -97,7 +105,12 @@ public class Assembler {
             } else if(!comment) { // else accumulate chars
                 sb.append(ch);
             }
+            if(errorCount > 10) {
+                showError("Too Many Errors, Aborting");
+                return false;
+            }
         }
+        return true;
     }
 
     private int parseString(String str, int address) {
@@ -115,7 +128,7 @@ public class Assembler {
 
     private int parseLine(String deposit, int address) {
         if(expectArgCount > 0) {
-            System.out.println("ASM ERROR: Prior opcode did not have enough args");
+            showError("ASM ERROR: Prior opcode had bad or missing args");
             expectArgCount = 0;
         }
         if (!deposit.isEmpty()) {
@@ -158,7 +171,7 @@ public class Assembler {
         if(deposit.trim().isEmpty()) {
             return address;
         }
-        if(deposit.endsWith(":") && !Character.isDigit(deposit.charAt(0))) {
+        if(deposit.endsWith(":") && Character.isAlphabetic(deposit.charAt(0))) {
             value = parseReference(deposit, value);
         } else {
             value = parseOpcodeOrByte(deposit, address, value);
@@ -172,24 +185,24 @@ public class Assembler {
         if(valOrNull != null) {
             value = valOrNull;
         } else if(passNumber == PassNumber.Pass2LinkLoad) {
-            System.out.println("ASM ERROR: Cannot find label " + deposit);
+            showError("ASM ERROR: Cannot find label " + deposit);
         }
         expectArgCount--;
         return value;
     }
 
     private int parseOpcodeOrByte(String deposit, int address, int value) {
-        if(Character.isDigit(deposit.charAt(0))) {
+        if(!Character.isAlphabetic(deposit.charAt(0))) {
             try {
                 value = parseNumeric(deposit, true);
             } catch (NumberFormatException ex) {
-                System.out.println("ASM ERROR: Expected numeric at address " + address);
+                showError("ASM ERROR: Expected numeric");
             }
             expectArgCount--;
         } else {
             Opcode opcode = Opcode.opcode(deposit);
             if (opcode.getValue() == Opcode.INVALID.getValue()) {
-                System.out.println("ASM ERROR: Invalid opcode at address " + address);
+                showError("ASM ERROR: Invalid opcode");
             }
             value = opcode.getValue();
             expectArgCount = opcode.getNumArgs();
@@ -200,10 +213,10 @@ public class Assembler {
     private int emit(int address, int value) {
         if(passNumber == PassNumber.Pass2LinkLoad) {
             if(address < maxAddress) {
-                System.out.println("ASM ERROR: Lower address may overwrite code " + address);
+                showError("ASM ERROR: Reduction in address may overwrite code");
             }
             if(listHexCodes) {
-                System.out.printf(" >>> %04x: %02x \n", address, value);
+                System.out.printf(" >>> %02x: %02x\n", address, value);
                 System.out.flush();
             }
             cpu.getMemoryCell(address).set(value);
@@ -212,13 +225,18 @@ public class Assembler {
         return address;
     }
 
+    private void showError(String message) {
+        System.out.println(message + ", at: " + toHex(address));
+        errorCount++;
+    }
+
     private int parseNumeric(String stringVal, boolean isRegisterNum) throws NumberFormatException {
         if (stringVal.trim().isEmpty()) {
             return 0;
         }
         int value = 0;
-        if(isRegisterNum && stringVal.startsWith("0$")) {
-            stringVal = stringVal.substring(2).trim();
+        if(isRegisterNum && stringVal.contains("$")) {
+            stringVal = stringVal.substring(stringVal.indexOf('$') + 1).trim();
             switch (stringVal) {
                 case "FLAGS": value = Substrate.FLAGS; break;
                 case "FP": value = Substrate.FP; break;
@@ -226,6 +244,7 @@ public class Assembler {
                 case "IP": value = Substrate.IP; break;
                 case "IV": value = Substrate.IV; break;
                 case "IN": value = Substrate.IN; break;
+                default:   value = Integer.parseInt(stringVal); break;
             }
         } else if(stringVal.toUpperCase().startsWith("0X")) {
             stringVal = stringVal.substring(2);
@@ -237,6 +256,10 @@ public class Assembler {
             value = Integer.parseInt(stringVal);
         }
         return value;
+    }
+
+    private String toHex(int value) {
+        return String.format("%x", value);
     }
 
 }

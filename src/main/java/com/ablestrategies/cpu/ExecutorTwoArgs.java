@@ -48,10 +48,10 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getRegister(argument1).add(getMemoryCellValueRegIndirect(argument2));
                 break;
             case ADCIMM:
-                getRegister(argument1).adc(argument2);
+                getRegister(argument1).adc(argument2, ((getRegisterValue(FLAGS) & Flags.CARRY.getBitNum()) > 0) ? 1 : 0);
                 break;
             case ADCREG:
-                getRegister(argument1).adc(getRegisterValue(argument2));
+                getRegister(argument1).adc(getRegisterValue(argument2), ((getRegisterValue(FLAGS) & Flags.CARRY.getBitNum()) > 0) ? 1 : 0);
                 break;
             case SHFLREG:
                 getRegister(argument1).shiftLeft(getRegisterValue(argument2));
@@ -73,6 +73,14 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 break;
             case SUBREG:
                 getRegister(argument1).add(-getRegisterValue(argument2));
+                break;
+            case CMPIMM:
+                getRegister(SCRATCH).set(getRegisterValue(argument1));
+                getRegister(SCRATCH).add(-argument2);
+                break;
+            case CMPREG:
+                getRegister(SCRATCH).set(getRegisterValue(argument1));
+                getRegister(SCRATCH).add(-getRegisterValue(argument2));
                 break;
             case INPUT:
                 registers[argument1].set(getIoPort(argument2).getUnsignedValue());

@@ -40,27 +40,27 @@ public class Octet {
     }
 
     public void set(String bits) {
-        int bitNum = 0;
-        for (int i = NumBits - 1; i >= 0; i--) {
+        int bitNum = bits.length() - 1;
+        for (int i = 0; i < NumBits; i++) {
             int bit = 0;
-            if(bitNum < bits.length()) {
+            if(bitNum >= 0) {
                 bit = bits.charAt(bitNum) % 2;
             }
             setBit(i, new Bit(bit));
-            bitNum++;
+            bitNum--;
         }
     }
 
     public void setBit(int bitNum, Bit bit) {
-        content[MaxBitNum - bitNum] = bit;
+        content[bitNum] = bit;
     }
 
     public Bit getBit(int bitNum) {
-        return content[MaxBitNum - bitNum];
+        return content[bitNum];
     }
 
     public Bit isZero() {
-        for (int i = 0; i < Octet.MaxBitNum; i++) {
+        for (int i = 0; i < Octet.NumBits; i++) {
             if(content[i].getVal() != 0) {
                 return new Bit(0);
             }
@@ -78,11 +78,12 @@ public class Octet {
     public Bit shiftLeft(int howFar) {
         Bit carry = new Bit(0);
         for (int i = 0; i < howFar; i++) {
-            for (int j = NumBits; j > 0; j--) {
-                Bit temp =  content[j - 1];
-                content[j - 1] = carry;
+            for (int j = 0; j < NumBits; j++) {
+                Bit temp =  new Bit(content[j]);
+                content[j] = carry;
                 carry = temp;
             }
+            carry = new Bit(0);
         }
         return carry;
     }
@@ -90,11 +91,12 @@ public class Octet {
     public Bit shiftRight(int howFar) {
         Bit carry = new Bit(0);
         for (int i = 0; i < howFar; i++) {
-            for (int j = 0; j < NumBits; j++) {
-                Bit temp =  content[j];
+            for (int j = MaxBitNum; j >= 0; j--) {
+                Bit temp =  new Bit(content[j]);
                 content[j] = carry;
                 carry = temp;
             }
+            carry = new Bit(0);
         }
         return carry;
     }
@@ -110,7 +112,7 @@ public class Octet {
     public int getUnsignedValue() {
         int accumulator = 0;
         int multiplier = 1;
-        for (int i = MaxBitNum; i >= 0; i--) {
+        for (int i = 0; i < NumBits; i++) {
             accumulator += content[i].getVal() * multiplier;
             multiplier *= 2;
         }
@@ -126,7 +128,7 @@ public class Octet {
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
         for (Bit bit : content) {
-            sb.append(bit);
+            sb.insert(0, bit);
         }
         sb.append("](");
         sb.append(getSignedValue());

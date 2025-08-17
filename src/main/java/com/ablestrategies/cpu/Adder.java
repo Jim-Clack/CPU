@@ -22,8 +22,8 @@ public class Adder extends Octet {
         return add(octet, 0);
     }
 
-    public Octet adc(Octet octet) {
-        return add(octet, carry.getVal());
+    public Octet adc(Octet octet, int carry) {
+        return add(octet, carry);
     }
 
     public Octet add(String octet) {
@@ -34,12 +34,12 @@ public class Adder extends Octet {
         return add(new Octet(octet));
     }
 
-    public Octet adc(String octet) {
-        return adc(new Octet(octet));
+    public Octet adc(String octet, int carry) {
+        return adc(new Octet(octet), carry);
     }
 
-    public Octet adc(int octet) {
-        return adc(new Octet(octet));
+    public Octet adc(int octet, int carry) {
+        return adc(new Octet(octet), carry);
     }
 
     public Bit increment() {
