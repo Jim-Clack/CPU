@@ -116,7 +116,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
     }
 
     public void ActivateRtc(int rtcInterval, int rtcInterruptNumber) {
-        this.rtcInterval = rtcInterval;
+        this.rtcInterval = Math.max(rtcInterval, 20); // never less than 20
         this.rtcInterruptNumber = rtcInterruptNumber;
         this.rtcTicks = 0;
     }

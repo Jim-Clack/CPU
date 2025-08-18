@@ -189,7 +189,8 @@ class AssemblerTest {
              Iters:   EQU 10
              Que:     0
              Sum:     0
-             Begin:   LOADIMM $IV, Isr:   # Enable interrupts
+                      # Try this with Isr1: -OR- Isr2:
+             Begin:   LOADIMM $IV, Isr1:  # Enable interrupts
              Loop:    ZEROREG $1
                       ADDMEM $1, Que:     # Add to set Que
                       JZEIMM Loop:        # Wait for Que != 0
@@ -200,11 +201,25 @@ class AssemblerTest {
                       CMPIMM $1, Iters:   # Do this 10 times
                       JZEIMM Exit:        # Then exit
                       JMPIMM Loop:        # Else keep looping
+             # --------------------------------
              # Here's the ISR...
-             Isr:     ENTER 0             # At every RTC tick...
+             Isr1:    ENTER 0             # At every RTC tick...
+                      CMPIMM $IN, Irq:    # Make sure it's for us
+                      JNZEIMM Leave1:     # If not Our IRQ
                       LOADIMM $2, 1
                       STORMEM $2, Que:    # Set Flag to 1
-                      ILEAVE
+             Leave1:  ILEAVE
+             # --------------------------------
+             # Here's an alternate ISR...
+             Isr2:    PUSHREG $FLAGS      # At every RTC tick...
+                      PUSHREG $2
+                      CMPIMM $IN, Irq:    # Make sure it's for us
+                      JNZEIMM Leave2:     # If not Our IRQ
+                      LOADIMM $2, 1
+                      STORMEM $2, Que:    # Set Flag to 1
+             Leave2:  POPREG $2
+                      POPREG $FLAGS
+                      IRET
              Exit:
          """,2, 0, 3, 10, 2);
     }

@@ -44,6 +44,7 @@ public class Assembler {
     private final HashMap<String, Integer> mapOfLabels = new HashMap<>();
     private final HashMap<String, Integer> mapOfConstants = new HashMap<>();
     private final CPU cpu;
+    private String lastLabel = "";
     private int address;
     private int errorCount;
     private int maxAddress;
@@ -176,6 +177,7 @@ public class Assembler {
             address = parseNumeric(split[0], false);
         } else if (passNumber == PassNumber.Pass1Assemble) { // left-justified label followed by colon
             String label = split[0].trim().toUpperCase();
+            this.lastLabel = label;
             if(mapOfLabels.containsKey(label)) {
                 showError("Same label used in more than one place: " + label);
             }
@@ -187,14 +189,9 @@ public class Assembler {
 
     private int parseConstant(String label, int address) {
         int intVal = this.parseNumeric(label, false);
-        label = label.toUpperCase().trim();
         if (passNumber == PassNumber.Pass1Assemble) { // left-justified label followed by colon
-            for(Map.Entry<String, Integer> entry : mapOfLabels.entrySet()) {
-                if(entry.getValue() == address) {
-                    mapOfConstants.put(entry.getKey(), intVal);
-                    System.out.printf(" >>> %04x: %s (constant)\n", intVal, entry.getKey());
-                }
-            }
+            mapOfConstants.put(this.lastLabel, intVal);
+            System.out.printf(" >>> %04x: %s (constant)\n", intVal, this.lastLabel);
         }
         return address;
     }
