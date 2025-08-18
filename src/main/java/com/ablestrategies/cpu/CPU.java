@@ -120,9 +120,9 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         this.traceCell2 = traceCell2;
     }
 
-    public void ActivateM1Clock(int rtcInterval, int rtcInterruptNumber) {
-        this.m1Interval = Math.max(rtcInterval, 20); // never less than 20
-        this.m1InterruptNumber = rtcInterruptNumber;
+    public void ActivateM1Clock(int m1Interval, int m1InterruptNumber) {
+        this.m1Interval = Math.max(m1Interval, 20); // never less than 20
+        this.m1InterruptNumber = m1InterruptNumber;
         this.m1Ticks = 0;
     }
 

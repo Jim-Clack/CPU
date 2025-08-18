@@ -10,7 +10,6 @@ public class SampleIoDevice implements ICallableDevice {
     public static int OutputPort = 10;
     public static int InputIRQ = 5;
     public static int InputPort = 11;
-    // public static int OutputIRQ = 4; // Not used for this device
 
     private final CPU cpu;
     private final Thread simulator;
@@ -22,7 +21,7 @@ public class SampleIoDevice implements ICallableDevice {
              Irq:     EQU 5
              OutPort: EQU 10
              InPort:  EQU 11
-             Buf:     0
+             Buf:     0                   # Inp -> Buf: -> Out
              Begin:   LOADIMM $IV, Isr:   # Enable interrupts
              Loop:    ZEROREG $1
                       ADDMEM $1, Buf:     # Add to set Flags
@@ -58,7 +57,6 @@ public class SampleIoDevice implements ICallableDevice {
         cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
         cpu.setTraceCells(3, 3);
      //   cpu.setTracingDelayMs(200);
-        // cpu.ioPorts[OutputPort].setInterruptNumber(OutputIRQ);
         return new Thread() {
             public void run() {
                 System.out.print("\n#############\n" +
