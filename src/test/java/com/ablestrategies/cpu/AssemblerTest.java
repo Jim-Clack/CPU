@@ -11,30 +11,32 @@ class AssemblerTest {
         test("""
                       CALLIMM A:
                       JMPIMM 0x20
-                C:    0
-                A:    LOADIMM $3, 51         # Func: set [4] to 51
+             C:       0
+             A:       LOADIMM $3, 51    # Func: set [4] to 51
                       STORMEM $3, C:
                       RET
-                0x20:
-            """,0, 30, 4, 51);
+             0x20:
+         """,0, 30, 4, 51);
     }
 
     @Test
     void testLoadStore() {
         test("""
+            Loc1:     EQU 0x50
+            Loc2:     EQU 0x51
                       LOADIMM $3, 7
-                      STORMEM $3, 0x50         # set [0x50] = 7
-                      LOADIMM $5, 0x51
-                      STORIND $3, 5            # set [0x51] = 7
+                      STORMEM $3, Loc1:   # set [0x50] = 7
+                      LOADIMM $5, Loc2:
+                      STORIND $3, 5       # set [0x51] = 7
                       LOADREG $6, $3
-                      STORMEM $6, 0x52         # set [0x52] = 7
-            """,0x51, 7, 0x52, 7);
+                      STORMEM $6, 0x52    # set [0x52] = 7
+         """,0x51, 7, 0x52, 7);
     }
 
     @Test
     void testEnterLeave() {
         test("""
-                      LOADIMM 0$SP, 127  # start the stack here
+                      LOADIMM $SP, 127    # start the stack here
                       LOADIMM $5, 1
                       LOADIMM $6, 2
                       PUSHREG $5          # push Arg 1, val=1
@@ -44,69 +46,145 @@ class AssemblerTest {
                       POPREG $2
                       STORMEM $2, Sum:    # save result to Sum:
                       JMPIMM End:
-                Sum:  0                   # 24: result goes here
-                Func: ENTER 1             # allocate 1 local Var
+             Sum:     0                   # 24: result goes here
+             Func:    ENTER 1             # allocate 1 local Var
                       LOADFRA $7, 2       # get Arg 2 into Reg 7
                       ADDFRA $7, 1        # add Arg 1 into Reg 7
                       STORFRA $7, 0       # store Sum in local Var
                       STORFRA $7, 2       # store it to Arg 2
                       LEAVE
-                127:   0                  # 127: result goes here, too
-                End:
-            """,127, 3, 24, 3);
+             127:     0                   # 127: result goes here, too
+             End:
+         """,127, 3, 24, 3);
+    }
+
+    @Test
+    void testCmpJZE() {
+        test("""
+                      JMPIMM Go:
+             Pos:     0
+             Neg:     0
+             Go:      LOADIMM $1, 0
+                      CMPIMM $1, 0
+             Test:    JZEIMM Skip:        # ZE
+                      PUSHREG $FLAGS
+                      LOADMEM $2, Pos:
+                      INCREG $2
+                      STORMEM $2, Pos:
+                      POPREG $FLAGS
+             Skip:    JNZEIMM Done:       # GT
+                      PUSHREG $FLAGS
+                      LOADMEM $2, Neg:
+                      INCREG $2
+                      STORMEM $2, Neg:
+                      POPREG $FLAGS
+             Done:   
+        """,2, 0, 3, 1);
+    }
+
+    @Test
+    void testCmpJGT() {
+        test("""
+                      JMPIMM Go:
+             Pos:     0
+             Neg:     0
+             Go:      LOADIMM $1, 1
+                      CMPIMM $1, 0
+             Test:    JGTIMM Skip:        # ZE
+                      PUSHREG $FLAGS
+                      LOADMEM $2, Pos:
+                      INCREG $2
+                      STORMEM $2, Pos:
+                      POPREG $FLAGS
+             Skip:    JLTEIMM Done:       # GT
+                      PUSHREG $FLAGS
+                      LOADMEM $2, Neg:
+                      INCREG $2
+                      STORMEM $2, Neg:
+                      POPREG $FLAGS
+             Done:
+         """,2, 0, 3, 1);
+    }
+
+    @Test
+    void testCmpJLT() {
+        test("""
+                      JMPIMM Go:
+             Pos:     0
+             Neg:     0
+             Go:      LOADIMM $1, 0
+                      CMPIMM $1, 1
+             Test:    JLTIMM Skip:        # ZE
+                      PUSHREG $FLAGS
+                      LOADMEM $2, Pos:
+                      INCREG $2
+                      STORMEM $2, Pos:
+                      POPREG $FLAGS
+             Skip:    JGTEIMM Done:       # GT
+                      PUSHREG $FLAGS
+                      LOADMEM $2, Neg:
+                      INCREG $2
+                      STORMEM $2, Neg:
+                      POPREG $FLAGS
+             Done:
+         """,2, 0, 3, 1);
     }
 
     @Test
     void testBlockingQueue() {
         test("""
+            Reg:      EQU 9               # Use this register
                       JMPIMM Test:
-                # Here's the one-byte blocking queue...
-                Put:  TSWAIT Lock:        # Wait: Spinlock
-                      PUSHREG $9          # Preserve $9
-                      LOADMEM $9, Lgt:
-                      CMPIMM $9, 0        # is Lgt=0?
-                      POPREG $9
+            # Here's the one-byte blocking queue...
+            Put:      TSWAIT Lock:        # Wait: Spinlock
+                      PUSHREG Reg:        # Preserve Reg 9
+                      LOADMEM Reg:, Lgt:
+                      CMPIMM Reg:, 0      # is Lgt=0?
+                      POPREG Reg:
                       ZEROMEM Lock:       # Release
                       JNZEIMM Put:        # Wait til Empty
-                      STORMEM $9, Que:    # Reg 9 = Data
-                      PUSHREG $9          # Preserve $9
-                      LOADIMM $9, 1       # Set Lgt to 1
-                      STORMEM $9, Lgt:
-                      POPREG $9
+                      STORMEM Reg:, Que:  # Reg 9 = Data
+                      PUSHREG Reg:        # Preserve $9
+                      LOADIMM Reg:, 1     # Set Lgt to 1
+                      STORMEM Reg:, Lgt:
+                      POPREG Reg:
                       ZEROMEM Lock:       # Release
                       RET
-                Take: TSWAIT Lock:        # Wait: Spinlock
-                      PUSHREG $9          # Preserve $9
-                      LOADMEM $9, Lgt:
-                      CMPIMM $9, 0        # is Lgt=0?
-                      POPREG $9
+            Take:     TSWAIT Lock:        # Wait: Spinlock
+                      PUSHREG Reg:        # Preserve $9
+                      LOADMEM Reg:, Lgt:
+                      CMPIMM Reg:, 0      # is Lgt=0?
+                      POPREG Reg:
                       ZEROMEM Lock:       # Release
                       JZEIMM Take:        # Wait til Full
-                      LOADMEM $9, Que:    # Reg 9 = Data
+                      LOADMEM Reg:, Que:  # Reg 9 = Data
                       ZEROMEM Lgt:        # Set Lgt to 0
                       ZEROMEM Lock:       # Release
                       RET
-                Lock: 0                   # Mutex
-                Que:  0                   # The Queue 
-                Lgt:  0                   # 1 if Queue full
-                # ----------------------------- 
-                # Here's the code to test it...
-                Ctr:  0                   # Counter 0..9
-                Rslt: 0                   # Result 0..10
-                Test: LOADMEM $9, Ctr:
+            Lock:     0                   # Mutex
+            Que:      0                   # The Queue 
+            Lgt:      0                   # 1 if Queue full
+            # ----------------------------- 
+            # Here's the code to test it...
+            Ctr:      0                   # Counter 0..9
+            Rslt:     0                   # Result 0..10
+            Test:     LOADMEM Reg:, Ctr:
                       CALLIMM Put:        # Put Ctr into Queue
-                      LOADIMM $9, 0
+                      LOADIMM Reg:, 0
                       CALLIMM Take:       # Get Ctr from Queue
-                      INCREG $9           # Increment
-                      CMPIMM $9, 10       # Has it reached 10?
+                      INCREG Reg:         # Increment
+                      CMPIMM Reg:, 10     # Has it reached 10?
                       JZEIMM Exit:        # If so, all done
-                      STORMEM $9, Ctr:    # Update Ctr
+                      STORMEM Reg:, Ctr:  # Update Ctr
                       JMPIMM Test:        # Loop
-                Exit: STORMEM $9, Rslt:
-            """,0x3d, 9, 0x3e, 10);
+            Exit:     STORMEM Reg:, Rslt:
+         """,0x3d, 9, 0x3e, 10);
     }
 
     private void test(String source, int memoryCell1, int expectedValue1, int memoryCell2, int expectedValue2) {
+        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+        String caller = trace[2].getMethodName();
+        System.out.println("\n-------------\nTesting: " + caller);
         CPU cpu = new CPU();
         Assembler assembler = new Assembler(cpu);
         cpu.setTracing(true);
@@ -116,8 +194,6 @@ class AssemblerTest {
         CPU.RunMode runMode = cpu.run(false);
         assertEquals(Substrate.RunMode.TRAP, runMode);
         assertEquals(expectedValue1, cpu.getMemoryCell(memoryCell1).getUnsignedValue());
-        if(memoryCell2 != memoryCell1) {
-            assertEquals(expectedValue2, cpu.getMemoryCell(memoryCell2).getUnsignedValue());
-        }
+        assertEquals(expectedValue2, cpu.getMemoryCell(memoryCell2).getUnsignedValue());
     }
 }

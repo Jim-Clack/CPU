@@ -17,7 +17,7 @@ class LogicGateTest {
     }
 
     void testGate(LogicGate gate, IntBinaryOperator tester) {
-        System.out.println("LogicGate Test: " + gate);
+        System.out.println("\n-------------\nLogicGate Test: " + gate);
         for(int a = 0; a < 2; a++) {
             for (int b = 0; b < 2; b++) {
                 Bit bitA = new Bit(a);

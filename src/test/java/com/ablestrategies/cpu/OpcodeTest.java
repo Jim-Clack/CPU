@@ -8,7 +8,7 @@ class OpcodeTest {
 
     @Test
     public void testOpcodes() {
-        System.out.println("Test Opcodes:");
+        System.out.println("\n-------------\nTest Opcodes:");
         for(Opcode opcode : Opcode.values()) {
             System.out.println(" " + opcode.getMnemonic());
             assertEquals(opcode.getMnemonic(), opcode.name());

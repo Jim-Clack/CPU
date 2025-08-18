@@ -8,7 +8,7 @@ class HalfAdderTest {
 
     @Test
     public void testHalfAdder() {
-        System.out.println("HalfAdder Test");
+        System.out.println("\n-------------\nHalfAdder Test");
         test(new Bit(0), new Bit(0), new Bit(0), new Bit(0));
         test(new Bit(0), new Bit(1), new Bit(1), new Bit(0));
         test(new Bit(1), new Bit(0), new Bit(1), new Bit(0));

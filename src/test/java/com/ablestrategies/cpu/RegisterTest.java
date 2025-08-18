@@ -8,7 +8,7 @@ class RegisterTest {
 
     @Test
     void testRegister() {
-        System.out.println("Register Tests:");
+        System.out.println("\n-------------\nRegister Tests:");
         FlagRegister flagRegister = new FlagRegister(null);
         Register register = new Register(flagRegister);
         Register register2 = new Register(flagRegister);

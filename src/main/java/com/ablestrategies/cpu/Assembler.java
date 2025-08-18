@@ -1,6 +1,7 @@
 package com.ablestrategies.cpu;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Quick two-pass Assembler/LinkLoader.
@@ -31,6 +32,7 @@ import java.util.HashMap;
  * - ConstantArgs/Bytes can start with "0x" if they are hex instead of decimal.
  * - Register numbers start with "0$" or "$", required if it's a register name.
  * - Math/logic operations on System registers do not set ZE/GT/LT flags.
+ * - There is a directive/pseudo-op EQU for creating numeric constants as well.
  */
 public class Assembler {
 
@@ -40,6 +42,7 @@ public class Assembler {
     }
 
     private final HashMap<String, Integer> mapOfLabels = new HashMap<>();
+    private final HashMap<String, Integer> mapOfConstants = new HashMap<>();
     private final CPU cpu;
     private int address;
     private int errorCount;
@@ -71,6 +74,8 @@ public class Assembler {
     }
 
     public int assemble(String program) {
+        mapOfLabels.clear();
+        mapOfConstants.clear();
         System.out.println("ASM Assembling...");
         passNumber = PassNumber.Pass1Assemble;
         boolean ok = processProgram(program);
@@ -153,7 +158,13 @@ public class Assembler {
                 }
                 split = deposit.split(",");
                 for (String opcodeOrArg : split) {
-                    address = parseWord(opcodeOrArg.trim(), address);
+                    String opcode = opcodeOrArg.trim();
+                    if(opcode.equalsIgnoreCase("EQU")) {
+                        address = parseConstant(split[1], address);
+                        break;
+                    } else {
+                        address = parseWord(opcode, address);
+                    }
                 }
             }
         }
@@ -164,8 +175,26 @@ public class Assembler {
         if (Character.isDigit(split[0].charAt(0))) { // address followed by colon
             address = parseNumeric(split[0], false);
         } else if (passNumber == PassNumber.Pass1Assemble) { // left-justified label followed by colon
-            mapOfLabels.put(split[0].trim().toUpperCase(), address);
-            System.out.printf(" >>> %04x: %s\n", address, split[0]);
+            String label = split[0].trim().toUpperCase();
+            if(mapOfLabels.containsKey(label)) {
+                showError("Same label used in more than one place: " + label);
+            }
+            mapOfLabels.put(label, address);
+            System.out.printf(" >>> %04x: %s (label)\n", address, label);
+        }
+        return address;
+    }
+
+    private int parseConstant(String label, int address) {
+        int intVal = this.parseNumeric(label, false);
+        label = label.toUpperCase().trim();
+        if (passNumber == PassNumber.Pass1Assemble) { // left-justified label followed by colon
+            for(Map.Entry<String, Integer> entry : mapOfLabels.entrySet()) {
+                if(entry.getValue() == address) {
+                    mapOfConstants.put(entry.getKey(), intVal);
+                    System.out.printf(" >>> %04x: %s (constant)\n", intVal, entry.getKey());
+                }
+            }
         }
         return address;
     }
@@ -185,9 +214,13 @@ public class Assembler {
     }
 
     private int parseReference(String deposit, int value) {
-        Integer valOrNull = mapOfLabels.get(deposit.substring(0, deposit.length() - 1).trim().toUpperCase());
-        if(valOrNull != null) {
-            value = valOrNull;
+        // Always check for a constant before a label, as constants are also labelled
+        Integer valOrNull1 = mapOfConstants.get(deposit.substring(0, deposit.length() - 1).trim().toUpperCase());
+        Integer valOrNull2 = mapOfLabels.get(deposit.substring(0, deposit.length() - 1).trim().toUpperCase());
+        if(valOrNull1 != null) {
+            value = valOrNull1;
+        } else if(valOrNull2 != null) {
+            value =  valOrNull2;
         } else if(passNumber == PassNumber.Pass2LinkLoad) {
             showError("ASM ERROR: Cannot find label " + deposit);
         }

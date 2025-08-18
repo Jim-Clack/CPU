@@ -20,7 +20,7 @@ class AdderTest {
         Octet octetQ = new Octet(q);
         Adder adder = new Adder();
         adder.set(octetP);
-        System.out.println("Adder Test: " + octetP + " + " + octetQ);
+        System.out.println("\n-------------\nAdder Test: " + octetP + " + " + octetQ);
         System.out.println(" Result=" + adder.add(octetQ));
         System.out.println("  Carry=" + adder.isCarry());
         System.out.println("   Zero=" + adder.isZero());

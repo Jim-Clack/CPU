@@ -21,6 +21,6 @@ public enum Flags {
     }
 
     public boolean getBit(Octet octet) {
-        return(octet.getUnsignedValue() & getBitWgt()) > 0;
+        return(octet.getUnsignedValue() & getBitWgt()) != 0;
     }
 }

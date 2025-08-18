@@ -8,7 +8,7 @@ class OctetTest {
 
     @Test
     void testOctet() {
-        System.out.println("Octet Tests:");
+        System.out.println("\n-------------\nOctet Tests:");
         testSignedValue(86, new Octet("01010110"));
         testSignedValue(54, new Octet(0x36));
         testSignedValue(-107, new Octet(-107));
