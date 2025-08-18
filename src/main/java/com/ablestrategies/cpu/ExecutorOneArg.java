@@ -25,6 +25,9 @@ public class ExecutorOneArg extends ExecutorNoArg {
                 }
                 getMemoryCell(argument1).set(1);
                 break;
+            case ZEROREG:
+                getRegister(argument1).set(0);
+                break;
             case ZEROMEM:
                 getMemoryCell(argument1).set(0);
                 break;

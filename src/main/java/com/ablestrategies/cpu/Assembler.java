@@ -136,7 +136,7 @@ public class Assembler {
     }
 
     private int parseLine(String deposit, int address) {
-        if(expectArgCount > 0) {
+        if(expectArgCount > 0 && passNumber == PassNumber.Pass2LinkLoad) {
             showError("ASM ERROR: Prior opcode had bad or missing args");
             expectArgCount = 0;
         }

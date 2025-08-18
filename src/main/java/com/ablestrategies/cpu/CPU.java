@@ -54,6 +54,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class CPU extends ExecutorTwoArgs implements IInterruptable {
 
     private final LinkedBlockingQueue<Integer> interruptNumbers = new LinkedBlockingQueue<>();
+    private int rtcInterval = 0;
+    private int rtcInterruptNumber = 0;
+    private int rtcTicks = 0;
     private int traceCell1 = 0;
     private int traceCell2 = memoryCells.length-1;
 
@@ -112,16 +115,33 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         this.traceCell2 = traceCell2;
     }
 
+    public void ActivateRtc(int rtcInterval, int rtcInterruptNumber) {
+        this.rtcInterval = rtcInterval;
+        this.rtcInterruptNumber = rtcInterruptNumber;
+        this.rtcTicks = 0;
+    }
+
     private void handleInterrupts() {
-        if(interruptNumbers.isEmpty() || !enableInterrupts) {
+        int interruptNumber = 0;
+        if(!enableInterrupts || getRegister(IV).isZero().getVal() > 0) {
             return;
         }
-        int interruptNumber = 0;
-        try {
-            interruptNumber = interruptNumbers.take();
-        } catch (InterruptedException e) {
-            System.out.printf("FAILURE to take interrupt " + interruptNumber + "\n" + e.getMessage());
-            throw new RuntimeException(e);
+        if(rtcInterruptNumber > 0) {
+            if(rtcTicks++ > rtcInterval) {
+                rtcTicks = 0;
+                sendInterrupt(rtcInterruptNumber);
+            }
+        }
+        if(!interruptNumbers.isEmpty()) {
+            try {
+                interruptNumber = interruptNumbers.take();
+            } catch (InterruptedException e) {
+                System.out.printf("FAILURE to take interrupt " + interruptNumber + "\n" + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+        if(interruptNumber <= 0) {
+            return;
         }
         if(tracing) {
             System.out.printf("%02x: INTERRUPT %d\n", registers[IP].getSignedValue() - 1, interruptNumber);

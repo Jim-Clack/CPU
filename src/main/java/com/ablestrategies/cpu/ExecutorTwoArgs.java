@@ -37,6 +37,9 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
             case ADDIMM:
                 getRegister(argument1).add(argument2);
                 break;
+            case ADDMEM:
+                getRegister(argument1).add(getMemoryCellValue(argument2));
+                break;
             case ADDREG:
                 getRegister(argument1).add(getRegisterValue(argument2));
                 break;

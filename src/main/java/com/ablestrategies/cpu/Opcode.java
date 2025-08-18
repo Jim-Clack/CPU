@@ -29,7 +29,8 @@ public enum Opcode {
     INCREG(38, "INCREG", 1),
     DECREG(39, "DECREG", 1),
     TSWAIT(50, "TSWAIT", 1 ),
-    ZEROMEM(51, "ZEROMEM", 1),
+    ZEROREG(51, "ZEROREG", 1),
+    ZEROMEM(52, "ZEROMEM", 1),
 
     SHFLREG(100, "SHFLREG", 2),
     SHFRREG(101, "SHFRREG", 2),

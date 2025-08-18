@@ -16,7 +16,7 @@ class AssemblerTest {
                       STORMEM $3, C:
                       RET
              0x20:
-         """,0, 30, 4, 51);
+         """,0, 30, 4, 51, 0);
     }
 
     @Test
@@ -30,7 +30,7 @@ class AssemblerTest {
                       STORIND $3, 5       # set [0x51] = 7
                       LOADREG $6, $3
                       STORMEM $6, 0x52    # set [0x52] = 7
-         """,0x51, 7, 0x52, 7);
+         """,0x51, 7, 0x52, 7, 0);
     }
 
     @Test
@@ -55,7 +55,7 @@ class AssemblerTest {
                       LEAVE
              127:     0                   # 127: result goes here, too
              End:
-         """,127, 3, 24, 3);
+         """,127, 3, 24, 3, 0);
     }
 
     @Test
@@ -79,7 +79,7 @@ class AssemblerTest {
                       STORMEM $2, Neg:
                       POPREG $FLAGS
              Done:   
-        """,2, 0, 3, 1);
+        """,2, 0, 3, 1, 0);
     }
 
     @Test
@@ -103,7 +103,7 @@ class AssemblerTest {
                       STORMEM $2, Neg:
                       POPREG $FLAGS
              Done:
-         """,2, 0, 3, 1);
+         """,2, 0, 3, 1, 0);
     }
 
     @Test
@@ -127,7 +127,7 @@ class AssemblerTest {
                       STORMEM $2, Neg:
                       POPREG $FLAGS
              Done:
-         """,2, 0, 3, 1);
+         """,2, 0, 3, 1, 0);
     }
 
     @Test
@@ -178,10 +178,40 @@ class AssemblerTest {
                       STORMEM Reg:, Ctr:  # Update Ctr
                       JMPIMM Test:        # Loop
             Exit:     STORMEM Reg:, Rslt:
-         """,0x3d, 9, 0x3e, 10);
+         """,0x3d, 9, 0x3e, 10, 0);
     }
 
-    private void test(String source, int memoryCell1, int expectedValue1, int memoryCell2, int expectedValue2) {
+    @Test
+    void testConcurrency() {
+        test("""
+                      JMPIMM Begin:
+             Irq:     EQU 2
+             Iters:   EQU 10
+             Que:     0
+             Sum:     0
+             Begin:   LOADIMM $IV, Isr:   # Enable interrupts
+             Loop:    ZEROREG $1
+                      ADDMEM $1, Que:     # Add to set Que
+                      JZEIMM Loop:        # Wait for Que != 0
+                      ZEROREG $2
+                      STORMEM $2, Que:    # Clear the Queue
+                      ADDMEM $1, Sum:     # Flag + Sum
+                      STORMEM $1, Sum:    # Store it to Sum
+                      CMPIMM $1, Iters:   # Do this 10 times
+                      JZEIMM Exit:        # Then exit
+                      JMPIMM Loop:        # Else keep looping
+             # Here's the ISR...
+             Isr:     ENTER 0             # At every RTC tick...
+                      LOADIMM $2, 1
+                      STORMEM $2, Que:    # Set Flag to 1
+                      ILEAVE
+             Exit:
+         """,2, 0, 3, 10, 2);
+    }
+
+    private void test(String source,
+                      int memoryCell1, int expectedValue1, int memoryCell2, int expectedValue2,
+                      int rtcInterruptNumber) {
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
         String caller = trace[2].getMethodName();
         System.out.println("\n-------------\nTesting: " + caller);
@@ -189,6 +219,9 @@ class AssemblerTest {
         Assembler assembler = new Assembler(cpu);
         cpu.setTracing(true);
         cpu.setTraceCells(memoryCell1, memoryCell2);
+        if(rtcInterruptNumber > 0) {
+            cpu.ActivateRtc(20, rtcInterruptNumber);
+        }
         int errorCount = assembler.assemble(source + " \n TRAP\n");
         assertEquals(0, errorCount);
         CPU.RunMode runMode = cpu.run(false);
