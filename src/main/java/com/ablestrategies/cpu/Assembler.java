@@ -3,30 +3,34 @@ package com.ablestrategies.cpu;
 import java.util.HashMap;
 
 /**
- * Quickly two-pass Assembler/LinkLoader.
- * (See AssemblerTest.java for examples)
+ * Quick two-pass Assembler/LinkLoader.
+ *   See AssemblerTest.java for examples.
+ * Opcode Mnemonic Meaning:
+ *   Operation[Condition][AddrMode]
+ * Condition:
+ *   ZE = Zero or Equal
+ *   LT = Less than
+ *   GT = Greater than
+ * AddrMode:
+ *   IMM = Immediate value - value is Arg2
+ *   REG = Register number - designated register Arg2
+ *   IND = Indirect - memory as specified by the designated register Arg2
+ *   MEM = Memory address - memory as specified by Arg2
+ *   FRA = Stack frame offset from FP (after an ENTER opcode) see Note3
+ *     Note1: for 2 Arg Ops: Arg1 is always REG so the AddrMode is for Arg2
+ *     Note2: AddrMode for source, except STORxxx where it's destination
+ *     Note3: FRA AddrMode 1, 2, 3... for params, 0, -1, -2... for locals
  * Pass in a string that contains a series of the following statements:
  *  [label:] [address:] [[opcode[,]] [arg[,]...] [label:] [byte[,]...] ["string"]
- * These can be newline-delimited or semicolon-delimited. If the address
- * is omitted, it increments starting from zero. Opcodes are not case-
- * sensitive. Spaces are optional and ignored. Comments begin with # and
- * continue to the end of line or a semicolon. If a label is left-justified
- * then it's a target instead of a reference. ConstantArgs/Bytes can start
- * with "0x" if they are hex instead of decimal, or they can start with "0$"
- * or "$" if they are a register name, like $FP. Operations on system
- * registers do not set ZE/GT/LT flags. Example code...
- *             # Test                Addr: HexCodes
- *     0:      LOADIMM, 2, LabelA:   # 00: 8d 02 05
- *             JMPIMM LabelB:        # 03: 0e 08
- *     LabelA: 1, 10, 100            # 05: 01 0a 64
- *     LabelB: CALLIMM 0x18          # 08: 12 18
- *             "ABC"                 # 0a: 41 42 43 00
- *             LOADMEM 1, LabelC:    # 0e: 8f 01 12
- *             RET                   # 11: 05
- *     LabelC: "D"                   # 12: 44 00
- *                                   # 14: -- -- -- --
- *     0x18:   ENTER 0               # 18: 0a 00
- *             LEAVE                 # 1a: 08
+ * These can be newline-delimited or semicolon-delimited.
+ * - If the address is omitted, it increments starting from zero.
+ * - Opcodes are not case-sensitive.
+ * - Spaces are optional and ignored.
+ * - Comments begin with # and continue to the end of line or a semicolon.
+ * - If a label is left-justified then it's a target instead of a reference.
+ * - ConstantArgs/Bytes can start with "0x" if they are hex instead of decimal.
+ * - Register numbers start with "0$" or "$", required if it's a register name.
+ * - Math/logic operations on System registers do not set ZE/GT/LT flags.
  */
 public class Assembler {
 

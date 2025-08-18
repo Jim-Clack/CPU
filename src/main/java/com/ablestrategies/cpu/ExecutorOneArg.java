@@ -37,6 +37,9 @@ public class ExecutorOneArg extends ExecutorNoArg {
             case JMPIMM:
                 registers[IP].set(argument1);
                 break;
+            case JMPREG:
+                registers[IP].set(getRegister(argument1).getUnsignedValue());
+                break;
             case CALLIMM:
                 push(registers[IP]);
                 registers[IP].set(argument1);
@@ -56,8 +59,20 @@ public class ExecutorOneArg extends ExecutorNoArg {
                     registers[IP].set(argument1);
                 }
                 break;
-            case JMPREG:
-                registers[IP].set(getRegister(argument1).getUnsignedValue());
+            case JNZEIMM:
+                if(!Flags.ZERO.getBit(getRegister(FLAGS))) {
+                    registers[IP].set(argument1);
+                }
+                break;
+            case JGTEIMM:
+                if(Flags.ZERO.getBit(getRegister(FLAGS)) || !Flags.SIGN.getBit(getRegister(FLAGS))) {
+                    registers[IP].set(argument1);
+                }
+                break;
+            case JLTEIMM:
+                if(Flags.ZERO.getBit(getRegister(FLAGS)) || Flags.SIGN.getBit(getRegister(FLAGS))) {
+                    registers[IP].set(argument1);
+                }
                 break;
             case NEGATE:
                 getRegister(argument1).negate();

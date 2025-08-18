@@ -2,23 +2,6 @@ package com.ablestrategies.cpu;
 
 import java.util.HashMap;
 
-/**
- * Opcode Mnemonic Meaning:
- *   Operation[Condition][AddrMode]
- * Condition:
- *   ZE = Zero or Equal
- *   LT = Less than
- *   GT = Greater than
- * AddrMode:
- *   IMM = Immediate value - value is Arg2
- *   REG = Register number - designated register Arg2
- *   IND = Indirect - memory as specified by the designated register Arg2
- *   MEM = Memory address - memory as specified by Arg2
- *   FRA = Stack frame offset from FP (only use after an ENTER opcode) Note3
- *     Note1: for 2 Arg Ops: Arg1 is always REG so the AddrMode is for Arg2
- *     Note2: AddrMode for source, except STORxxx where it's destination
- *     Note3: FRA AddrMode 1, 2, 3... for params, 0, -1, -2... for locals
- */
 public enum Opcode {
 
     NOOP(0, "NOOP", 0),
@@ -30,12 +13,15 @@ public enum Opcode {
     ILEAVE(9, "ILEAVE", 0),
 
     ENTER(10, "ENTER", 1),
+    JMPREG(11, "JMPREG", 1),
     JMPIMM(14, "JMPIMM", 1),
     JZEIMM(15, "JZEIMM", 1),
     JGTIMM(16, "JGTIMM", 1),
     JLTIMM(17, "JLTIMM", 1),
-    CALLIMM(18, "CALLIMM", 1),
-    JMPREG(21, "JMPREG", 1),
+    JNZEIMM(18, "JNZEIMM", 1),
+    JGTEIMM(19, "JGTEIMM", 1),
+    JLTEIMM(20, "JLTEIMM", 1),
+    CALLIMM(30, "CALLIMM", 1),
     PUSHREG(31, "PUSHREG", 1),
     POPREG(32, "POPREG", 1),
     NEGATE(35, "NEGATE", 1),

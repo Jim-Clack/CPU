@@ -16,7 +16,7 @@ class AssemblerTest {
                       STORMEM $3, C:
                       RET
                 0x20:
-            """,0, 18, 4, 51);
+            """,0, 30, 4, 51);
     }
 
     @Test
@@ -62,27 +62,47 @@ class AssemblerTest {
                       JMPIMM Test:
                 # Here's the one-byte blocking queue...
                 Put:  TESTSET Lock:       # Wait: Spinlock
+                      PUSHREG $9          # Preserve $9
+                      LOADMEM $9, Lgt:
+                      CMPIMM $9, 0        # is Lgt=0?
+                      POPREG $9
+                      ZEROMEM Lock:       # Release
+                      JNZEIMM Put:        # Wait til Empty
                       STORMEM $9, Que:    # Reg 9 = Data
+                      PUSHREG $9          # Preserve $9
+                      LOADIMM $9, 1       # Set Lgt to 1
+                      STORMEM $9, Lgt:
+                      POPREG $9
                       ZEROMEM Lock:       # Release
                       RET
                 Take: TESTSET Lock:       # Wait: Spinlock
+                      PUSHREG $9          # Preserve $9
+                      LOADMEM $9, Lgt:
+                      CMPIMM $9, 0        # is Lgt=0?
+                      POPREG $9
+                      ZEROMEM Lock:       # Release
+                      JZEIMM Take:        # Wait til Full
                       LOADMEM $9, Que:    # Reg 9 = Data
+                      ZEROMEM Lgt:        # Set Lgt to 0
                       ZEROMEM Lock:       # Release
                       RET
                 Lock: 0                   # Mutex
                 Que:  0                   # The Queue 
-                Ctr:  0                   # Counter 0...10
-                Rslt: 0                   # Final Count
+                Lgt:  0                   # 1 if Queue full
                 # Here's the code to test it...
+                Ctr:  0                   # Counter 0..9
+                Rslt: 0                   # Result 0..10
                 Test: LOADMEM $9, Ctr:
                       CALLIMM Put:        # Put Ctr into Queue
+                      LOADIMM $9, 0
+                      CALLIMM Take:       # Get Ctr from Queue
                       INCREG $9           # Increment
                       CMPIMM $9, 10       # Has it reached 10?
                       JZEIMM Exit:        # If so, all done
                       STORMEM $9, Ctr:    # Update Ctr
                       JMPIMM Test:        # Loop
                 Exit: STORMEM $9, Rslt:
-            """,20, 9, 21, 10);
+            """,0x3d, 9, 0x3e, 10);
     }
 
     private void test(String source, int memoryCell1, int expectedValue1, int memoryCell2, int expectedValue2) {
@@ -91,7 +111,7 @@ class AssemblerTest {
         cpu.setTracing(true);
         cpu.setTraceCells(memoryCell1, memoryCell2);
         int errorCount = assembler.assemble(source + " \n TRAP\n");
-     // assertEquals(0, errorCount);
+        assertEquals(0, errorCount);
         CPU.RunMode runMode = cpu.run(false);
         assertEquals(Substrate.RunMode.TRAP, runMode);
         assertEquals(expectedValue1, cpu.getMemoryCell(memoryCell1).getUnsignedValue());

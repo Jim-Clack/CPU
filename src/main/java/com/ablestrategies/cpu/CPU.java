@@ -67,6 +67,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
             System.out.println("CPU cannot resume as it was not paused by a TRAP opcode");
             return runMode;
         }
+        System.out.println("EXECUTING...");
         runMode = RunMode.RUNNING;
         while(runMode == RunMode.RUNNING) {
             handleInterrupts();
@@ -83,7 +84,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
                 }
             }
             if(tracing) {
-                System.out.printf("R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 FL FP SP IP IV IN %02x %02x\n",
+                System.out.printf("R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 FL FP SP IP IV IN SC %02x %02x\n",
                         traceCell1, traceCell2);
                 for(Register register : registers) {
                     System.out.printf("%02x ", register.getUnsignedValue());
