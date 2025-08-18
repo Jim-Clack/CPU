@@ -1,16 +1,16 @@
 ## CPU Simulator
 * 8-bit CPU simulator in Java
-* includes an assembler, a sample device driver, and unit tests
-* simple teaching/learning tool for low-level systems programming
-* has atomic test/set/wait, trap/singleStep, M1 clock simulation
-* next steps: comments, cleanup, 16-bit addresses/registers
-* i'm 75 and retired, so this is just a toy project 
-* jim.clack@ablestrategies.com
+* Includes an assembler, a sample device driver, and unit tests
+* Simple teaching/learning tool for low-level systems programming
+* Has atomic test/set/wait, trap/singleStep, M1 clock simulation
+* Next steps: comments, cleanup, 16-bit addresses/registers
+* I'm 75 and retired, so this is just a toy project 
+* Email: jim.clack@ablestrategies.com
 
 ## Topics for Discussion
-* bits numbered right-to-left (units, twos, fours, etc.) i.e. 7 6 5 4 3 2 1 0
-* two's compliment notation (negative values, numeric/logical invert)
-* interrupts, concurrency, i/o ports, device drivers 
+* Bits numbered right-to-left (units, twos, fours, etc.) i.e. 7 6 5 4 3 2 1 0
+* Two's compliment notation (negative values, numeric/logical invert)
+* IRQ/ISR handling, concurrency, i/o ports, device drivers, M1 clock interrupt
 
 ## How to use it, the basics
 ~~~
@@ -31,7 +31,7 @@ cpu.activateM1Clock(millis, IRQ); // IRQ 0 = disable
 CPU.RunMode runMode = cpu.run(false);
 ~~~
 
-## How to run a device simulator and driver
+## Running a device simulator and driver
 ~~~
 class MyDevice implements ICallableDevice {
   static int OutputPort = 10;
@@ -116,41 +116,36 @@ CPU Notes
  *   Register 13 - IP: Instruction Pointer
  *   Register 14 - IV: Interrupt Vector
  *   Register 15 - IN: Interrupt Number
- * Stack Frame:
- *   Method Parameters (top of stack) [FP+13+arg] arg=1, 2, ...
+ * Stack Frame: (suggested, or enforced by ENTER opcode)
+ *   Method Parameters (top of stack) [FP+13+arg#] arg=1, 2, ...
  *   Return IP (next instruction after CALL)
  *   Preserved Previous R0...R9
  *   Preserved Previous Flags
  *   Preserved Previous FP
  *   (Current FP points here)
- *   Local Variables (size=ENTER Arg1) [FP-var] var=0, -1, -2, ...
+ *   Local Variables (size=ENTER Arg1) [FP-local#] local=0, -1, ...
  *   (SP starts out here and grows downward)
  *   Temporaries
- * Call:
+ * Calling Convention:    (Suggested)
  *   Push Params...
- *   CALL xxxx
- * Enter:
- *   PushAll R0...FP
- *   Loadreg FP, SP
- *   Adjust SP per Arg
- * Leave:
- *   Loadreg SP, FP
- *   PopALl FP...R0
- * Return:
- *   RET
+ *   CALLIMM xxxx
  *   ADDIMM SP, ParamsSize
+ * Function Entry:        (Suggested, enforced by ENTER opcode)
+ *   PUSHREG $0 ... PUSHREG $FP
+ *   LOADREG $FP, $SP
+ *   ADDIMM $SP, nnn      (Where nnn = LocalsSize)
+ * Function Exit:         (Suggested, enforced by LEAVE opcode, see Note1) 
+ *   LOADREG $SP, $FP
+ *   POPREG $FP ... POPREG $0
+ *   RET                  (see Note1)
+ * *Note1: For an ISR, use ILEAVE/IRET instead of LEAVE/RET
  * FP offsets, assuming there are 2 one-byte parameters and 3 one-byte locals:
- *   PARAM_1    FP+15
- *   PARAM_2    FP+14
- *   OLD_IP     FP+13
- *   OLD_R0     FP+12
+ *   PARAM_2    FP+2
+ *   PARAM_1    FP+1
  *   ...
- *   OLD_R9     FP+3
- *   OLD_FLAGS  FP+2
- *   OLD_FP     FP+1
- *   LOCAL_3    FP
- *   LOCAL_2    FP-1
- *   LOCAL_1    FP-2
+ *   LOCAL_0    FP
+ *   LOCAL_1    FP-1
+ *   LOCAL_2    FP-2
  * Class Hierarchies
  *   Substrate
  *     ExecutorNoArg
@@ -204,7 +199,7 @@ Opcode Mnemonic #Args
  * (121, "ADCIMM", 2),
  * (122, "ADCREG", 2),
  * (131, "SUBIMM", 2),
- * 132, "SUBREG", 2),
+ * (132, "SUBREG", 2),
  * (135, "CMPIMM", 2),
  * (136, "CMPREG", 2),
  * (141, "LOADIMM", 2),
