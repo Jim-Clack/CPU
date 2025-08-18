@@ -50,6 +50,18 @@ import java.util.concurrent.LinkedBlockingQueue;
  *   LOCAL_3    FP
  *   LOCAL_2    FP-1
  *   LOCAL_1    FP-2
+ * Class Hierarchies
+ *   Substrate
+ *     ExecutorNoArg
+ *       ExecutorOneArg
+ *         ExecutorTwoArgs
+ *           CPU
+ * BByte
+ *   MemoryCell
+ *   IOPort
+ *   Adder
+ *     Register
+ *       FlagRegister
  */
 public class CPU extends ExecutorTwoArgs implements IInterruptable {
 

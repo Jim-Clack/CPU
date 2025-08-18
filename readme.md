@@ -63,14 +63,14 @@ class MyDevice implements ICallableDevice {
     simulator.start();
     // 4. Run it...
     cpu.run(false);
-    simulator.join(); // optional
+    simulator.join(); // <== optional, best practice
   }
   // 5. Handle console output from the CPU simulator
   public int acceptOutputFromCPU(int value) {
     System.out.println("\n" + value);
     return 0; // no interrupt needed
   }
-  // 6. The device driver source code
+  // 6. Here's the device driver source code
   static String driverSourceCode = """
            JMPIMM Begin:       # Skip over data area
   OutPort: EQU 10
@@ -153,7 +153,19 @@ CPU Notes
  *   LOCAL_3    FP
  *   LOCAL_2    FP-1
  *   LOCAL_1    FP-2
- 
+ * Class Hierarchies
+ *   Substrate
+ *     ExecutorNoArg
+ *       ExecutorOneArg
+ *         ExecutorTwoArgs
+ *           CPU
+ * BByte
+ *   MemoryCell
+ *   IOPort
+ *   Adder
+ *     Register
+ *       FlagRegister
+
 Opcode Mnemonic #Args
  * (0, "NOOP", 0),
  * (1, "INVALID", 0),
