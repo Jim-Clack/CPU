@@ -3,7 +3,7 @@ package com.ablestrategies.cpu;
 public class ExecutorTwoArgs extends ExecutorOneArg {
 
     protected RunMode execute(Opcode opcode, int argument1, int argument2) {
-        if(tracing) {
+        if(tracingDelayMs >= 0) {
             System.out.printf("%02x: %s %02x, %02x\n",
                     registers[IP].getSignedValue() - 3,
                         opcode.getMnemonic(), argument1, argument2);
@@ -85,11 +85,11 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getRegister(SCRATCH).set(getRegisterValue(argument1));
                 getRegister(SCRATCH).add(-getRegisterValue(argument2));
                 break;
-            case INPUT:
+            case INPREG:
                 registers[argument1].set(getIoPort(argument2).getUnsignedValue());
                 break;
-            case OUTPUT:
-                ioPorts[argument1].set(getRegister(argument2).getUnsignedValue());
+            case OUTREG:
+                ioPorts[argument2].set(getRegister(argument1).getUnsignedValue());
                 break;
             default:
                 return RunMode.FATAL;

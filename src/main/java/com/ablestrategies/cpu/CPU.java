@@ -54,9 +54,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class CPU extends ExecutorTwoArgs implements IInterruptable {
 
     private final LinkedBlockingQueue<Integer> interruptNumbers = new LinkedBlockingQueue<>();
-    private int rtcInterval = 0;
-    private int rtcInterruptNumber = 0;
-    private int rtcTicks = 0;
+    private int m1Interval = 0;
+    private int m1InterruptNumber = 0;
+    private int m1Ticks = 0;
     private int traceCell1 = 0;
     private int traceCell2 = memoryCells.length-1;
 
@@ -86,7 +86,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
                     runMode = execute(opcode, argument1, argument2);
                 }
             }
-            if(tracing) {
+            if(tracingDelayMs >= 0) {
                 System.out.printf("R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 FL FP SP IP IV IN SC %02x %02x\n",
                         traceCell1, traceCell2);
                 for(Register register : registers) {
@@ -95,6 +95,11 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
                 System.out.printf("%02x ", memoryCells[traceCell1].getUnsignedValue());
                 System.out.printf("%02x\n", memoryCells[traceCell2].getUnsignedValue());
                 System.out.flush();
+                try {
+                    Thread.sleep(tracingDelayMs);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         System.out.printf("%02x: %s - EXECUTION STOPPED\n", registers[IP].getSignedValue(), runMode.name());
@@ -115,10 +120,10 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         this.traceCell2 = traceCell2;
     }
 
-    public void ActivateRtc(int rtcInterval, int rtcInterruptNumber) {
-        this.rtcInterval = Math.max(rtcInterval, 20); // never less than 20
-        this.rtcInterruptNumber = rtcInterruptNumber;
-        this.rtcTicks = 0;
+    public void ActivateM1Clock(int rtcInterval, int rtcInterruptNumber) {
+        this.m1Interval = Math.max(rtcInterval, 20); // never less than 20
+        this.m1InterruptNumber = rtcInterruptNumber;
+        this.m1Ticks = 0;
     }
 
     private void handleInterrupts() {
@@ -126,10 +131,10 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         if(!enableInterrupts || getRegister(IV).isZero().getVal() > 0) {
             return;
         }
-        if(rtcInterruptNumber > 0) {
-            if(rtcTicks++ > rtcInterval) {
-                rtcTicks = 0;
-                sendInterrupt(rtcInterruptNumber);
+        if(m1InterruptNumber > 0) {
+            if(m1Ticks++ > m1Interval) {
+                m1Ticks = 0;
+                sendInterrupt(m1InterruptNumber);
             }
         }
         if(!interruptNumbers.isEmpty()) {
@@ -143,7 +148,7 @@ public class CPU extends ExecutorTwoArgs implements IInterruptable {
         if(interruptNumber <= 0) {
             return;
         }
-        if(tracing) {
+        if(tracingDelayMs >= 0) {
             System.out.printf("%02x: INTERRUPT %d\n", registers[IP].getSignedValue() - 1, interruptNumber);
         }
         push(registers[IP]);

@@ -8,8 +8,7 @@ public class Main {
 
     public Main() { // Functor
         CPU cpu = new CPU();
-        cpu.setTracing(true);
-        cpu.setTraceCells(5, 8);
+        // Test SampleIoDevice
         SampleIoDevice device = new SampleIoDevice(cpu);
         cpu.run(false);
         try {

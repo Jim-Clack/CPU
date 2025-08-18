@@ -56,8 +56,8 @@ public enum Opcode {
     STORMEM(151, "STORMEM", 2),
     STORFRA(154, "STORFRA", 2),
     STORIND(155, "STORIND", 2),
-    INPUT(201, "INPUT", 2),
-    OUTPUT(211, "OUTPUT", 2);
+    INPREG(201, "INPREG", 2),
+    OUTREG(211, "OUTREG", 2);
 
     public static final int LongestMnemonicLgt = 7;
     private final int value;

@@ -22,7 +22,7 @@ public abstract class Substrate {
     protected final Register[] registers = new Register[SCRATCH + 1];
     protected final IOPort[] ioPorts = new IOPort[256];
     protected boolean enableInterrupts = true;
-    protected boolean tracing = false;
+    protected int tracingDelayMs = -1;
     protected RunMode runMode = RunMode.IDLE;
 
     public void initialize(IInterruptable interruptableALU) {
@@ -51,8 +51,8 @@ public abstract class Substrate {
         registers[IN].set(0);
     }
 
-    public void setTracing(boolean tracing) {
-        this.tracing = tracing;
+    public void setTracingDelayMs(int tracingDelayMs) {
+        this.tracingDelayMs = tracingDelayMs; // -1 = off
     }
 
     protected int getNextProgramByte() {

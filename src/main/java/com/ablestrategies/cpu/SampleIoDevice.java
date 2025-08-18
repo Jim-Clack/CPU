@@ -18,17 +18,29 @@ public class SampleIoDevice implements ICallableDevice {
     private final String driverCode =
         """
             # SampleIoDevice Driver       Addr: HexCodes
-                    LOADIMM, 2, LabelA:   # 00: 8d 02 05
-                    JMP LabelB:           # 03: 0e 08
-            LabelA: 1, 10, 100            # 05: 01 0a 64
-            LabelB: CALL 24               # 08: 12 18 
-                    "ABC"                 # 0a: 41 42 43 00
-                    LOADMEM 1, LabelC:    # 0e: 8f 01 12
-                    RET                   # 11: 05
-            LabelC: "D"                   # 12: 44 00
-                                          # 14: -- -- -- --                   
-            24:     ENTER 0               # 18: 0a 00
-                    LEAVE                 # 1a: 08
+                      JMPIMM Begin:
+             Irq:     EQU 5
+             OutPort: EQU 10
+             InPort:  EQU 11
+             Buf:     0
+             Begin:   LOADIMM $IV, Isr:   # Enable interrupts
+             Loop:    ZEROREG $1
+                      ADDMEM $1, Buf:     # Add to set Flags
+                      JZEIMM Loop:        # Wait for Buf != 0
+                      INCREG $1
+                      OUTREG $1, OutPort: # Echo it
+                      ZEROREG $2
+                      STORMEM $2, Buf:    # Clear the Buffer
+                      JMPIMM Loop:        # Else keep looping
+             # --------------------------------
+             # Here's the ISR...
+             Isr:     ENTER 0             # When input is rcv'd...
+                      CMPIMM $IN, Irq:    # Make sure it's for us
+                      JNZEIMM Leave:      # If not Our IRQ
+                      INPREG $2, InPort:  # Read it
+                      STORMEM $2, Buf:    # Put it into Buf
+             Leave:   ILEAVE
+             Exit:
         """;
 
     public SampleIoDevice(CPU cpu) {
@@ -42,20 +54,22 @@ public class SampleIoDevice implements ICallableDevice {
 
     private Thread simulate() {
         cpu.ioPorts[OutputPort].setDeviceCallback(this);
+        cpu.ioPorts[InputPort].setDeviceCallback(this);
         cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
+        cpu.setTraceCells(3, 3);
+     //   cpu.setTracingDelayMs(200);
         // cpu.ioPorts[OutputPort].setInterruptNumber(OutputIRQ);
         return new Thread() {
             public void run() {
+                System.out.print("\n#############\n" +
+                        "Type a Number 0..99 to send to CPU Simulator, then hit Enter.\n" +
+                        "The Driver will add 1 to it, then reply with that value...\n#############\n\n>>");
                 Scanner keyboard = new Scanner(System.in);
                 while(true) {
-                    System.out.println("\nInteger to send to CPU Simulator, or type quit, then hit Enter");
                     String command = keyboard.nextLine();
-                    if (command.equalsIgnoreCase("quit")) {
-                        break;
-                    }
                     if (!command.isEmpty()) {
                         int value = Integer.parseInt(command);
-                        System.out.println("\nSending: " + value + " to CPU Simulator input...");
+                        System.out.println("\n#############\nSending: " + value + " to CPU Simulator input...\n##############");
                         cpu.ioPorts[InputPort].inputToCpu(value);
                     }
                 }
@@ -69,7 +83,7 @@ public class SampleIoDevice implements ICallableDevice {
 
     @Override
     public int acceptOutputFromCPU(int value) {
-        System.out.println("\nOutput from CPU simulator to SampleIoDevice: " + value);
+        System.out.println("\n#############\nOutput from CPU simulator to SampleIoDevice: " + value + "\n#############");
         return 0; // no interrupt needed
     }
 

@@ -226,16 +226,16 @@ class AssemblerTest {
 
     private void test(String source,
                       int memoryCell1, int expectedValue1, int memoryCell2, int expectedValue2,
-                      int rtcInterruptNumber) {
+                      int m1InterruptNumber) {
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
         String caller = trace[2].getMethodName();
         System.out.println("\n-------------\nTesting: " + caller);
         CPU cpu = new CPU();
         Assembler assembler = new Assembler(cpu);
-        cpu.setTracing(true);
+        cpu.setTracingDelayMs(0);
         cpu.setTraceCells(memoryCell1, memoryCell2);
-        if(rtcInterruptNumber > 0) {
-            cpu.ActivateRtc(20, rtcInterruptNumber);
+        if(m1InterruptNumber > 0) {
+            cpu.ActivateM1Clock(20, m1InterruptNumber);
         }
         int errorCount = assembler.assemble(source + " \n TRAP\n");
         assertEquals(0, errorCount);

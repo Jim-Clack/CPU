@@ -3,7 +3,7 @@ package com.ablestrategies.cpu;
 public class ExecutorNoArg extends Substrate {
 
     protected RunMode execute(Opcode opcode) {
-        if(tracing) {
+        if(tracingDelayMs >= 0) {
             System.out.printf("%02x: %s\n",
                     registers[IP].getUnsignedValue() - 1, opcode.getMnemonic());
         }
