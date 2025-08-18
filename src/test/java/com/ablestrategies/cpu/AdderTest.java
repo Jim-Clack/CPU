@@ -16,12 +16,12 @@ class AdderTest {
     }
 
     public void testAdd(int expected, int p, int q) {
-        Octet octetP = new Octet(p);
-        Octet octetQ = new Octet(q);
+        BByte bbyteP = new BByte(p);
+        BByte bbyteQ = new BByte(q);
         Adder adder = new Adder();
-        adder.set(octetP);
-        System.out.println("\n-------------\nAdder Test: " + octetP + " + " + octetQ);
-        System.out.println(" Result=" + adder.add(octetQ));
+        adder.set(bbyteP);
+        System.out.println("\n-------------\nAdder Test: " + bbyteP + " + " + bbyteQ);
+        System.out.println(" Result=" + adder.add(bbyteQ));
         System.out.println("  Carry=" + adder.isCarry());
         System.out.println("   Zero=" + adder.isZero());
         System.out.println("    Neg=" + adder.isNegative());

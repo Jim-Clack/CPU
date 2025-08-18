@@ -1,6 +1,6 @@
 package com.ablestrategies.cpu;
 
-public class MemoryCell extends Octet {
+public class MemoryCell extends BByte {
 
 
 }

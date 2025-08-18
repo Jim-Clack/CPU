@@ -23,8 +23,8 @@ class RegisterTest {
         testSignedValue(109, register);
         testFlags(0, 0, 0, register);
 
-        register.set(Octet.MaxBitWgt - 1);
-        register2.set(Octet.MaxBitWgt - 1);
+        register.set(BByte.MaxBitWgt - 1);
+        register2.set(BByte.MaxBitWgt - 1);
         register.add(register2);
         testFlags(0, 0, 1, register);
         register.add(register2);
@@ -43,7 +43,7 @@ class RegisterTest {
         testFlags(0, 0, 0, register);
 
         register.set("11001010");
-        register2.set(register.getSignedValue() ^ (Octet.NextBitWgt - 1));
+        register2.set(register.getSignedValue() ^ (BByte.NextBitWgt - 1));
         register.onesCompliment();
         testUnsignedValue(register2.getSignedValue(), register);
 

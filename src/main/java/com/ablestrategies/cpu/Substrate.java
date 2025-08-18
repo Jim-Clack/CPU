@@ -61,7 +61,7 @@ public abstract class Substrate {
         return arg;
     }
 
-    protected void push(Octet arg) {
+    protected void push(BByte arg) {
         memoryCells[registers[SP].getUnsignedValue()].set(arg.getUnsignedValue());
         registers[SP].decrement();
     }
@@ -71,7 +71,7 @@ public abstract class Substrate {
         registers[SP].decrement();
     }
 
-    protected Octet pop() {
+    protected BByte pop() {
         registers[SP].increment();
         return getMemoryCell(registers[SP].getUnsignedValue());
     }
@@ -102,14 +102,14 @@ public abstract class Substrate {
 
     public MemoryCell getMemoryCellFrameLocal(int offset) {
         if(offset > 0) {
-            offset += 13 * Octet.NumBits/8;
+            offset += 13 * BByte.NumBits/8;
         }
         return getMemoryCell(getRegister(FP).getUnsignedValue() + offset);
     }
 
     public int getMemoryCellValueFrameLocal(int offset) {
         if(offset > 0) {
-            offset += 13 * Octet.NumBits/8;
+            offset += 13 * BByte.NumBits/8;
         }
         return getMemoryCellValue(getRegister(FP).getUnsignedValue() + offset);
     }

@@ -1,6 +1,6 @@
 package com.ablestrategies.cpu;
 
-public class IOPort extends Octet {
+public class IOPort extends BByte {
 
     private final IInterruptable interruptableALU;
     private ICallableDevice callableDevice = null;

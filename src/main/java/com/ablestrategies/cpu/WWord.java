@@ -1,33 +1,33 @@
 package com.ablestrategies.cpu;
 
-public class Octet {
+public class WWord {
 
-    public static int NumBits = 8;
-    public static int MaxBitNum = 7;
-    public static int MaxBitWgt = 128;
-    public static int NextBitWgt = 256;
+    public static int NumBits = 16;
+    public static int MaxBitNum = 15;
+    public static int MaxBitWgt = 32768;
+    public static int NextBitWgt = 65536;
 
     private final Bit[] content = new Bit[NumBits];
 
-    public Octet() {
+    public WWord() {
         for (int i = 0; i < NumBits; i++) {
             setBit(i, new Bit(0));
         }
     }
 
-    public Octet(Octet octet) {
-        set(octet);
+    public WWord(WWord wWord) {
+        set(wWord);
     }
 
-    public Octet(int intVal) {
+    public WWord(int intVal) {
         set(intVal);
     }
 
-    public Octet(String bits) {
+    public WWord(String bits) {
         set(bits);
     }
 
-    public void set(Octet from) {
+    public void set(WWord from) {
         for (int i = 0; i < NumBits; i++) {
             this.content[i] = new Bit(from.content[i].getVal());
         }
@@ -60,7 +60,7 @@ public class Octet {
     }
 
     public Bit isZero() {
-        for (int i = 0; i < Octet.NumBits; i++) {
+        for (int i = 0; i < WWord.NumBits; i++) {
             if(content[i].getVal() != 0) {
                 return new Bit(0);
             }
@@ -68,7 +68,7 @@ public class Octet {
         return new Bit(1);
     }
 
-    public Octet onesCompliment() {
+    public WWord onesCompliment() {
         for (int i = 0; i < NumBits; i++) {
             content[i] = new Bit(content[i].inverse());
         }

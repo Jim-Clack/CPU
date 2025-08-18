@@ -20,7 +20,7 @@ public enum Flags {
         return 1 << bitNum;
     }
 
-    public boolean getBit(Octet octet) {
-        return(octet.getUnsignedValue() & getBitWgt()) != 0;
+    public boolean getBit(BByte bbyte) {
+        return(bbyte.getUnsignedValue() & getBitWgt()) != 0;
     }
 }

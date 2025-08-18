@@ -6,21 +6,21 @@ import java.util.Map;
 /**
  * Quick two-pass Assembler/LinkLoader.
  *   See AssemblerTest.java for examples.
- * Opcode Mnemonic Meaning:
+ * Meaning of opcode Mnemonib:
  *   Operation[Condition][AddrMode]
  * Condition:
- *   ZE = Zero or Equal
- *   LT = Less than
- *   GT = Greater than
+ *   ZE = Zero or Equal         NZE = Not Zero or Equal
+ *   LT = Less than             LTE = Less Than or Equal
+ *   GT = Greater than          GTE = Greater Than or Equal
  * AddrMode:
- *   IMM = Immediate value - value is Arg2
+ *   IMM = Immediate value - value is Arg2 literally
  *   REG = Register number - designated register Arg2
  *   IND = Indirect - memory as specified by the designated register Arg2
  *   MEM = Memory address - memory as specified by Arg2
- *   FRA = Stack frame offset from FP (after an ENTER opcode) see Note3
+ *   FRA = Stack frame offset from FP (only after ENTER opcode) see Note3
  *     Note1: for 2 Arg Ops: Arg1 is always REG so the AddrMode is for Arg2
  *     Note2: AddrMode for source, except STORxxx where it's destination
- *     Note3: FRA AddrMode 1, 2, 3... for params, 0, -1, -2... for locals
+ *     Note3: FRA AddrMode 1, 2, 3... for params; 0, -1, -2... for locals
  * Pass in a string that contains a series of the following statements:
  *  [label:] [address:] [[opcode[,]] [arg[,]...] [label:] [byte[,]...] ["string"]
  * These can be newline-delimited or semicolon-delimited.
@@ -163,7 +163,7 @@ public class Assembler {
                         address = parseConstant(split[1], address);
                         break;
                     } else {
-                        address = parseWord(opcode, address);
+                        address = parseToken(opcode, address);
                     }
                 }
             }
@@ -199,7 +199,7 @@ public class Assembler {
         return address;
     }
 
-    private int parseWord(String deposit, int address) {
+    private int parseToken(String deposit, int address) {
         int value = 0;
         if(deposit.trim().isEmpty()) {
             return address;

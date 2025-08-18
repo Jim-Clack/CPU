@@ -10,8 +10,8 @@ public class FlagRegister extends Register {
         this.substrate = substrate;
     }
 
-    public void set(Octet from) {
-        for(int i = 0; i < Octet.NumBits; i++) {
+    public void set(BByte from) {
+        for(int i = 0; i < BByte.NumBits; i++) {
             setBit(i, new Bit(from.getBit(i)));
         }
     }
@@ -65,7 +65,7 @@ public class FlagRegister extends Register {
 
     ///  The following methods do not make sense for a destination FlagRegister
 
-    public Octet onesCompliment() {
+    public BByte onesCompliment() {
         throw new RuntimeException(errorMsg);
     }
 

@@ -1,14 +1,14 @@
 package com.ablestrategies.cpu;
 
-public class Adder extends Octet {
+public class Adder extends BByte {
 
     protected Bit carry = new Bit(0);
 
-    public Octet add(Octet octet, int prevCarry) {
+    public BByte add(BByte bbyte, int prevCarry) {
         HalfAdder halfAdder = new HalfAdder();
         carry = new Bit(prevCarry);
-        for(int bitNum = 0; bitNum < Octet.NumBits; bitNum++) {
-            halfAdder.add(getBit(bitNum), octet.getBit(bitNum));
+        for(int bitNum = 0; bitNum < BByte.NumBits; bitNum++) {
+            halfAdder.add(getBit(bitNum), bbyte.getBit(bitNum));
             Bit step1Carry = halfAdder.getCarry();
             halfAdder.add(halfAdder.getSum(), carry);
             carry = LogicGate.OR.gate(halfAdder.getCarry(), step1Carry);
@@ -18,44 +18,44 @@ public class Adder extends Octet {
         return this;
     }
 
-    public Octet add(Octet octet) {
-        return add(octet, 0);
+    public BByte add(BByte bbyte) {
+        return add(bbyte, 0);
     }
 
-    public Octet adc(Octet octet, int carry) {
-        return add(octet, carry);
+    public BByte adc(BByte bbyte, int carry) {
+        return add(bbyte, carry);
     }
 
-    public Octet add(String octet) {
-        return add(new Octet(octet));
+    public BByte add(String bbyte) {
+        return add(new BByte(bbyte));
     }
 
-    public Octet add(int octet) {
-        return add(new Octet(octet));
+    public BByte add(int bbyte) {
+        return add(new BByte(bbyte));
     }
 
-    public Octet adc(String octet, int carry) {
-        return adc(new Octet(octet), carry);
+    public BByte adc(String bbyte, int carry) {
+        return adc(new BByte(bbyte), carry);
     }
 
-    public Octet adc(int octet, int carry) {
-        return adc(new Octet(octet), carry);
+    public BByte adc(int bbyte, int carry) {
+        return adc(new BByte(bbyte), carry);
     }
 
     public Bit increment() {
-        this.add(new Octet(1));
+        this.add(new BByte(1));
         return this.carry;
     }
 
     public Bit decrement() {
-        this.add(new Octet(-1));
+        this.add(new BByte(-1));
         return this.carry;
     }
 
     public Bit negate() {
         this.onesCompliment();
         Bit oldCarry = this.carry;
-        this.add(new Octet(1));
+        this.add(new BByte(1));
         this.carry = new Bit(this.carry.getVal() | oldCarry.getVal());
         return this.carry;
     }
@@ -65,7 +65,7 @@ public class Adder extends Octet {
     }
 
     public Bit isNegative() {
-        return getBit(Octet.MaxBitNum);
+        return getBit(BByte.MaxBitNum);
     }
 
     public Bit shiftLeft(int howFar) { carry = super.shiftLeft(howFar); return carry; }

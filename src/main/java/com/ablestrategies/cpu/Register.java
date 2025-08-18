@@ -15,45 +15,45 @@ public class Register extends Adder {
 
     public void invert() {
         onesCompliment();
-        super.add(new Octet(1));
+        super.add(new BByte(1));
         syncFlagRegister();
     }
 
-    public void and(Octet octet) {
-        for (int i = 0; i < Octet.NumBits; i++) {
-            super.setBit(i, LogicGate.AND.gate(getBit(i), octet.getBit(i)));
+    public void and(BByte bbyte) {
+        for (int i = 0; i < BByte.NumBits; i++) {
+            super.setBit(i, LogicGate.AND.gate(getBit(i), bbyte.getBit(i)));
         }
         syncFlagRegister();
     }
 
-    public void or(Octet octet) {
-        for (int i = 0; i < Octet.NumBits; i++) {
-            super.setBit(i, LogicGate.OR.gate(getBit(i), octet.getBit(i)));
+    public void or(BByte bbyte) {
+        for (int i = 0; i < BByte.NumBits; i++) {
+            super.setBit(i, LogicGate.OR.gate(getBit(i), bbyte.getBit(i)));
         }
         syncFlagRegister();
     }
 
-    public void xor(Octet octet) {
-        for (int i = 0; i < Octet.NumBits; i++) {
-            super.setBit(i, LogicGate.XOR.gate(getBit(i), octet.getBit(i)));
+    public void xor(BByte bbyte) {
+        for (int i = 0; i < BByte.NumBits; i++) {
+            super.setBit(i, LogicGate.XOR.gate(getBit(i), bbyte.getBit(i)));
         }
         syncFlagRegister();
     }
 
-    public Octet add(Octet octet) {
-        Octet result = super.add(new Octet(octet));
+    public BByte add(BByte bbyte) {
+        BByte result = super.add(new BByte(bbyte));
         syncFlagRegister();
         return result;
     }
 
-    public Octet add(String octet) {
-        Octet result = super.add(new Octet(octet));
+    public BByte add(String bbyte) {
+        BByte result = super.add(new BByte(bbyte));
         syncFlagRegister();
         return result;
     }
 
-    public Octet add(int octet) {
-        Octet result = super.add(new Octet(octet));
+    public BByte add(int bbyte) {
+        BByte result = super.add(new BByte(bbyte));
         syncFlagRegister();
         return result;
     }
