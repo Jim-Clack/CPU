@@ -61,7 +61,7 @@ class AssemblerTest {
         test("""
                       JMPIMM Test:
                 # Here's the one-byte blocking queue...
-                Put:  TESTSET Lock:       # Wait: Spinlock
+                Put:  TSWAIT Lock:        # Wait: Spinlock
                       PUSHREG $9          # Preserve $9
                       LOADMEM $9, Lgt:
                       CMPIMM $9, 0        # is Lgt=0?
@@ -75,7 +75,7 @@ class AssemblerTest {
                       POPREG $9
                       ZEROMEM Lock:       # Release
                       RET
-                Take: TESTSET Lock:       # Wait: Spinlock
+                Take: TSWAIT Lock:        # Wait: Spinlock
                       PUSHREG $9          # Preserve $9
                       LOADMEM $9, Lgt:
                       CMPIMM $9, 0        # is Lgt=0?
@@ -89,6 +89,7 @@ class AssemblerTest {
                 Lock: 0                   # Mutex
                 Que:  0                   # The Queue 
                 Lgt:  0                   # 1 if Queue full
+                # ----------------------------- 
                 # Here's the code to test it...
                 Ctr:  0                   # Counter 0..9
                 Rslt: 0                   # Result 0..10

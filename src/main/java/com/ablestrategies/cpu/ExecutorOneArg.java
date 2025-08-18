@@ -15,7 +15,7 @@ public class ExecutorOneArg extends ExecutorNoArg {
                 registers[FP].set(registers[SP].getUnsignedValue());
                 registers[SP].set(registers[SP].getUnsignedValue() - argument1);
                 break;
-            case TESTSET:
+            case TSWAIT:
                 while(getMemoryCellValue(argument1) > 0) {
                     try {
                         Thread.sleep(100);

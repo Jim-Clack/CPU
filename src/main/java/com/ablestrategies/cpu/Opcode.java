@@ -28,7 +28,7 @@ public enum Opcode {
     INVERT(36, "INVERT", 1),
     INCREG(38, "INCREG", 1),
     DECREG(39, "DECREG", 1),
-    TESTSET(50, "TESTSET", 1 ),
+    TSWAIT(50, "TSWAIT", 1 ),
     ZEROMEM(51, "ZEROMEM", 1),
 
     SHFLREG(100, "SHFLREG", 2),
