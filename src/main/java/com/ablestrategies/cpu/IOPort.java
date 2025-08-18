@@ -28,7 +28,9 @@ public class IOPort extends BByte {
     @Override
     public void set(int intVal) {
         super.set(intVal);
-        interruptableALU.sendInterrupt(callableDevice.acceptOutputFromCPU(this.getSignedValue()));
+        if(callableDevice != null) {
+            interruptableALU.sendInterrupt(callableDevice.acceptOutputFromCPU(this.getSignedValue()));
+        }
     }
 
 }

@@ -53,7 +53,6 @@ public class SampleIoDevice implements ICallableDevice {
 
     private Thread simulate() {
         cpu.ioPorts[OutputPort].setDeviceCallback(this);
-        cpu.ioPorts[InputPort].setDeviceCallback(this);
         cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
         cpu.setTraceCells(3, 3);
      //   cpu.setTracingDelayMs(200);

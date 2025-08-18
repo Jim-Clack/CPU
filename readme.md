@@ -43,7 +43,6 @@ class MyDevice implements ICallableDevice {
     new Assembler(cpu).assemble(driverSourceCode);
     // 2. Wire this device simulator to the CPU
     cpu.ioPorts[OutputPort].setDeviceCallback(this);
-    cpu.ioPorts[InputPort].setDeviceCallback(this);
     cpu.ioPorts[InputPort].setInterruptNumber(InputIRQ);
     // 3. Create a kbd input simulator for the CPU
     Thread simulator = new Thread() {
