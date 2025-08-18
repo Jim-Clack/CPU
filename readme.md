@@ -2,15 +2,15 @@
 * 8-bit CPU simulator in Java
 * includes an assembler, a sample device driver, and unit tests
 * simple teaching/learning tool for low-level systems programming
+* has atomic test/set/wait, trap/singleStep, M1 clock simulation
 * next steps: comments, cleanup, 16-bit addresses/registers
 * i'm 75 and retired, so this is just a toy project 
 * jim.clack@ablestrategies.com
 
 ## Topics for Discussion
 * bits numbered right-to-left (units, twos, fours, etc.) i.e. 7 6 5 4 3 2 1 0
-* two's compliment notation (negative values, numeric invert b boolean invert)
+* two's compliment notation (negative values, numeric/logical invert)
 * interrupts, concurrency, i/o ports, device drivers 
-* little endian (versus big endian) byte order
 
 ## How to use it, the basics
 ~~~
@@ -26,8 +26,8 @@ String myAsmCode = "...put your ASM source code here...";
 CPU cpu = new CPU();
 Assembler asm = new Assembler(cpu);
 int errorCount = asm.assemble(myAsmCode);
-cpu.setTracingDelayMs(200);
-cpu.activateM1Clock(millis, IRQ);
+cpu.setTracingDelayMs(200); // ms -1 = disable
+cpu.activateM1Clock(millis, IRQ); // IRQ 0 = disable
 CPU.RunMode runMode = cpu.run(false);
 ~~~
 
@@ -63,7 +63,6 @@ class MyDevice implements ICallableDevice {
     simulator.start();
     // 4. Run it...
     cpu.run(false);
-    simulator.join(); // <== optional, best practice
   }
   // 5. Handle console output from the CPU simulator
   public int acceptOutputFromCPU(int value) {
@@ -81,7 +80,7 @@ class MyDevice implements ICallableDevice {
   Loop:    ZEROREG $1
            ADDMEM $1, Buf:     # Add to set Flags
            JZEIMM Loop:        # Wait for Buf != 0
-           INCREG $1
+           INCREG $1           # Increment InputVal 
            OUTREG $1, OutPort: # Echo it
            ZEROREG $2
            STORMEM $2, Buf:    # Clear the Buffer
