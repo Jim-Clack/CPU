@@ -4,72 +4,70 @@ import java.util.HashMap;
 
 public enum Opcode {
 
-    NOOP(0, "NOOP", 0),
-    INVALID(1, "INVALID", 0),
-    TRAP(2, "TRAP", 0),
-    RET(5, "RET", 0),
-    IRET(6, "IRET", 0),
-    LEAVE(8, "LEAVE", 0),
-    ILEAVE(9, "ILEAVE", 0),
+    NOOP(0, 0),
+    INVALID(1, 0),
+    TRAP(2, 0),
+    RET(5, 0),
+    IRET(6, 0),
+    LEAVE(8, 0),
+    ILEAVE(9, 0),
 
-    ENTER(10, "ENTER", 1),
-    JMPREG(11, "JMPREG", 1),
-    JMPIMM(14, "JMPIMM", 1),
-    JZEIMM(15, "JZEIMM", 1),
-    JGTIMM(16, "JGTIMM", 1),
-    JLTIMM(17, "JLTIMM", 1),
-    JNZEIMM(18, "JNZEIMM", 1),
-    JGTEIMM(19, "JGTEIMM", 1),
-    JLTEIMM(20, "JLTEIMM", 1),
-    CALLIMM(30, "CALLIMM", 1),
-    PUSHREG(31, "PUSHREG", 1),
-    POPREG(32, "POPREG", 1),
-    NEGATE(35, "NEGATE", 1),
-    INVERT(36, "INVERT", 1),
-    INCREG(38, "INCREG", 1),
-    DECREG(39, "DECREG", 1),
-    TSWAIT(50, "TSWAIT", 1 ),
-    ZEROREG(51, "ZEROREG", 1),
-    ZEROMEM(52, "ZEROMEM", 1),
+    ENTER(10, 1),
+    JMPREG(11, 1),
+    JMPIMM(14, 1),
+    JZEIMM(15, 1),
+    JGTIMM(16, 1),
+    JLTIMM(17, 1),
+    JNZEIMM(18, 1),
+    JGTEIMM(19, 1),
+    JLTEIMM(20, 1),
+    CALLIMM(30, 1),
+    PUSHREG(31, 1),
+    POPREG(32, 1),
+    NEGATE(35, 1),
+    INVERT(36, 1),
+    INCREG(38, 1),
+    DECREG(39, 1),
+    TSWAIT(50, 1 ),
+    ZEROREG(51, 1),
+    ZEROMEM(52, 1),
 
-    SHFLREG(100, "SHFLREG", 2),
-    SHFRREG(101, "SHFRREG", 2),
-    ANDREG(102, "ANDREG", 2),
-    XORREG(103, "XORREG", 2),
-    ORREG(104, "ORREG", 2),
-    ADDIMM(111, "ADDIMM", 2),
-    ADDREG(112, "ADDREG", 2),
-    ADDMEM(113, "ADDMEM", 2),
-    ADDFRA(114, "ADDFRA", 2),
-    ADDIND(115, "ADDIND", 2),
-    ADCIMM(121, "ADCIMM", 2),
-    ADCREG(122, "ADCREG", 2),
-    SUBIMM(131, "SUBIMM", 2),
-    SUBREG(132, "SUBREG", 2),
-    CMPIMM(135, "CMPIMM", 2),
-    CMPREG(136, "CMPREG", 2),
-    LOADIMM(141, "LOADIMM", 2),
-    LOADREG(142, "LOADREG", 2),
-    LOADMEM(143, "LOADMEM", 2),
-    LOADFRA(144, "LOADFRA", 2),
-    LOADIND(145, "LOADIND", 2),
-    STORMEM(151, "STORMEM", 2),
-    STORFRA(154, "STORFRA", 2),
-    STORIND(155, "STORIND", 2),
-    INPREG(201, "INPREG", 2),
-    OUTREG(211, "OUTREG", 2);
+    SHFLREG(100, 2),
+    SHFRREG(101, 2),
+    ANDREG(102, 2),
+    XORREG(103, 2),
+    ORREG(104, 2),
+    ADDIMM(111, 2),
+    ADDREG(112, 2),
+    ADDMEM(113, 2),
+    ADDFRA(114, 2),
+    ADDIND(115, 2),
+    ADCIMM(121, 2),
+    ADCREG(122, 2),
+    SUBIMM(131, 2),
+    SUBREG(132, 2),
+    CMPIMM(135, 2),
+    CMPREG(136, 2),
+    LOADIMM(141, 2),
+    LOADREG(142, 2),
+    LOADMEM(143, 2),
+    LOADFRA(144, 2),
+    LOADIND(145, 2),
+    STORMEM(151, 2),
+    STORFRA(154, 2),
+    STORIND(155, 2),
+    INPREG(201, 2),
+    OUTREG(211, 2);
 
     public static final int LongestMnemonicLgt = 7;
     private final int value;
-    private final String mnemonic;
     private final int numArgs;
 
     private static final HashMap<Integer, Opcode> mapByValue = new HashMap<>();
     private static final HashMap<String, Opcode> mapByMnemonic = new HashMap<>();
 
-    Opcode(int value, String mnemonic, int numArgs) {
+    Opcode(int value, int numArgs) {
         this.value = value;
-        this.mnemonic = mnemonic;
         this.numArgs = numArgs;
     }
 
@@ -92,11 +90,11 @@ public enum Opcode {
     }
 
     public int getValue() {
-        return value;
+        return this.value;
     }
 
     public String getMnemonic() {
-        return mnemonic;
+        return this.name();
     }
 
     public int getNumArgs() {
@@ -105,7 +103,7 @@ public enum Opcode {
 
     @Override
     public String toString() {
-        return mnemonic;
+        return name();
     }
 
     private static void ensureMapsAreInitialized() {
@@ -114,7 +112,7 @@ public enum Opcode {
         }
         for (Opcode opcode : Opcode.values()) {
             mapByValue.put(opcode.value, opcode);
-            mapByMnemonic.put(opcode.mnemonic.trim().toUpperCase(), opcode);
+            mapByMnemonic.put(opcode.name(), opcode);
         }
     }
 
