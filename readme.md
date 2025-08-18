@@ -216,7 +216,7 @@ Opcode Mnemonic #Args
 Assembler Notes
  * Quick two-pass Assembler/LinkLoader.
  *   See AssemblerTest.java for examples.
- * Meaning of opcode Mnemonib:
+ * Meaning of opcode Mnemonic:
  *   Operation[Condition][AddrMode]
  * Condition:
  *   ZE = Zero or Equal         NZE = Not Zero or Equal
@@ -233,6 +233,15 @@ Assembler Notes
  *     Note3: FRA AddrMode 1, 2, 3... for params; 0, -1, -2... for locals
  * Pass in a string that contains a series of the following statements:
  *  [label:] [address:] [[opcode[,]] [arg[,]...] [label:] [byte[,]...] ["string"]
+ * Registers:
+ *   $0 .. $9  User registers - General purpose accumulators/indexers
+ *   $FLAG     Flag register - Bit Weights: 1=Zero, 2=Carry, 4=Sign, 8=EnabIntr
+ *   $FP       Frame Pointer - Normally maintained by ENTER/LEAVE/ILEAVE opcodes
+ *   $SP       Stack Pointer - Used by PUSHxxx/POPxxx,ENTER/LEAVE/ILEAVE opcodes
+ *   $IP       Instruction Pointer - System Use ONLY
+ *   $IV       Interrupt Vector - Set this to your ISR or ISR discriminator
+ *   $IN       Interrupt Number - System sets this to the current IRQ
+ *   $SC       Internal Scratch Register - Overwritten by arith/logic opcodes
  * These can be newline-delimited or semicolon-delimited.
  * - If the address is omitted, it increments starting from zero.
  * - Opcodes are not case-sensitive.
