@@ -77,6 +77,16 @@ public class ExecutorOneArg extends ExecutorNoArg {
                     registers[IP].set(argument1);
                 }
                 break;
+            case JCYIMM:
+                if(FlagBit.CARRY.getBit(getRegister(FLAGS))) {
+                    registers[IP].set(argument1);
+                }
+                break;
+            case JNCYIMM:
+                if(!FlagBit.CARRY.getBit(getRegister(FLAGS))) {
+                    registers[IP].set(argument1);
+                }
+                break;
             case NEGATE:
                 getRegister(argument1).negate();
                 break;

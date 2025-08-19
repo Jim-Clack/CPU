@@ -21,6 +21,8 @@ public enum Opcode {
     JNZEIMM(18, 1),
     JGTEIMM(19, 1),
     JLTEIMM(20, 1),
+    JCYIMM(21, 1),
+    JNCYIMM(22, 1),
     CALLIMM(30, 1),
     PUSHREG(31, 1),
     POPREG(32, 1),

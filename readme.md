@@ -1,6 +1,7 @@
 ## CPU Simulator
 * 8-bit CPU simulator in Java
 * Includes an assembler, a sample device driver, and unit tests
+* Please refer to the accompanying document
 * Simple teaching/learning tool for low-level systems programming
 * Has atomic test/set/wait, trap/singleStep, M1 clock simulation
 * Next steps: comments, cleanup, 16-bit addresses/registers

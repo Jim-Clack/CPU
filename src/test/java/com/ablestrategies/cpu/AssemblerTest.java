@@ -90,13 +90,13 @@ class AssemblerTest {
              Neg:     0
              Go:      LOADIMM $1, 1
                       CMPIMM $1, 0
-             Test:    JGTIMM Skip:        # ZE
+             Test:    JGTIMM Skip:        # GT
                       PUSHREG $FLAGS
                       LOADMEM $2, Pos:
                       INCREG $2
                       STORMEM $2, Pos:
                       POPREG $FLAGS
-             Skip:    JLTEIMM Done:       # GT
+             Skip:    JLTEIMM Done:       # LTE
                       PUSHREG $FLAGS
                       LOADMEM $2, Neg:
                       INCREG $2
@@ -114,13 +114,13 @@ class AssemblerTest {
              Neg:     0
              Go:      LOADIMM $1, 0
                       CMPIMM $1, 1
-             Test:    JLTIMM Skip:        # ZE
+             Test:    JLTIMM Skip:        # LT
                       PUSHREG $FLAGS
                       LOADMEM $2, Pos:
                       INCREG $2
                       STORMEM $2, Pos:
                       POPREG $FLAGS
-             Skip:    JGTEIMM Done:       # GT
+             Skip:    JGTEIMM Done:       # GTE
                       PUSHREG $FLAGS
                       LOADMEM $2, Neg:
                       INCREG $2
@@ -128,6 +128,30 @@ class AssemblerTest {
                       POPREG $FLAGS
              Done:
          """,2, 0, 3, 1, 0);
+    }
+
+    @Test
+    void testCmpJCY() {
+        test("""
+                      JMPIMM Go:
+             Pos:     0
+             Neg:     0
+             Go:      LOADIMM $1, 250
+                      ADDIMM $1, 50
+             Test:    JCYIMM Skip:        # CY
+                      PUSHREG $FLAGS
+                      LOADMEM $2, Pos:
+                      INCREG $2
+                      STORMEM $2, Pos:
+                      POPREG $FLAGS
+             Skip:    JNCYIMM Done:       # NCY
+                      PUSHREG $FLAGS
+                      LOADMEM $2, Neg:
+                      INCREG $2
+                      STORMEM $2, Neg:
+                      POPREG $FLAGS
+             Done:   
+        """,2, 0, 3, 1, 0);
     }
 
     @Test
