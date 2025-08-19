@@ -67,7 +67,7 @@ public class SampleIoDevice implements ICallableDevice {
                     if (!command.isEmpty()) {
                         int value = Integer.parseInt(command);
                         System.out.println("\n#############\nSending: " + value + " to CPU Simulator input...\n##############");
-                        cpu.ioPorts[InputPort].inputToCpu(value);
+                        cpu.getIoPort(InputPort).inputToCpu(value);
                     }
                 }
             }

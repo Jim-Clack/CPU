@@ -51,10 +51,10 @@ public class ExecutorTwoArgs extends ExecutorOneArg {
                 getRegister(argument1).add(getMemoryCellValueRegIndirect(argument2));
                 break;
             case ADCIMM:
-                getRegister(argument1).adc(argument2, ((getRegisterValue(FLAGS) & Flags.CARRY.getBitNum()) > 0) ? 1 : 0);
+                getRegister(argument1).adc(argument2, ((getRegisterValue(FLAGS) & FlagBit.CARRY.getBitNum()) > 0) ? 1 : 0);
                 break;
             case ADCREG:
-                getRegister(argument1).adc(getRegisterValue(argument2), ((getRegisterValue(FLAGS) & Flags.CARRY.getBitNum()) > 0) ? 1 : 0);
+                getRegister(argument1).adc(getRegisterValue(argument2), ((getRegisterValue(FLAGS) & FlagBit.CARRY.getBitNum()) > 0) ? 1 : 0);
                 break;
             case SHFLREG:
                 getRegister(argument1).shiftLeft(getRegisterValue(argument2));

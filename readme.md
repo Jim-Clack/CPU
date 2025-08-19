@@ -4,11 +4,14 @@
 * Simple teaching/learning tool for low-level systems programming
 * Has atomic test/set/wait, trap/singleStep, M1 clock simulation
 * Next steps: comments, cleanup, 16-bit addresses/registers
+* Yes, it is designed to NOT be fast or efficient! Why?
+* Because it models computer hardware, even Bits, as objects.
 * I'm 75 and retired, so this is just a toy project 
-* Email: jim.clack@ablestrategies.com
+* My Email: jim.clack@ablestrategies.com
 
 ## Topics for Discussion
-* Bits numbered right-to-left (units, twos, fours, etc.) i.e. 7 6 5 4 3 2 1 0
+* Bits are numbered right-to-left from zero - i.e. 7 6 5 4 3 2 1 0
+* Bit weights are powers-of-two - i.e. 128, 64, 32, 16, 8, 4, 2, 1 (units)
 * Two's compliment notation (negative values, numeric/logical invert)
 * IRQ/ISR handling, concurrency, i/o ports, device drivers, M1 clock interrupt
 
@@ -20,7 +23,7 @@ asm.assemble("Buf: EQU 0x51; LOADIMM $3, 7; STORMEM $3, Buf: TRAP");
 cpu.run(false);
 ~~~
 
-## How to do debugging, concurrency, M1 clock, etc...
+## How to do debugging, concurrency, M1 clock, ...
 ~~~
 String myAsmCode = "...put your ASM source code here...";
 CPU cpu = new CPU();
@@ -53,7 +56,7 @@ class MyDevice implements ICallableDevice {
           String command = keyboard.nextLine();
           if (!command.isEmpty()) {
             int value = Integer.parseInt(command);
-            cpu.ioPorts[InputPort].inputToCpu(value);
+            cpu.getIoPort(InputPort).inputToCpu(value);
           }
         }
       }

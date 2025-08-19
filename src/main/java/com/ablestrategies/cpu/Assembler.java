@@ -1,7 +1,6 @@
 package com.ablestrategies.cpu;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Quick two-pass Assembler/LinkLoader.
@@ -52,7 +51,7 @@ public class Assembler {
 
     private final HashMap<String, Integer> mapOfLabels = new HashMap<>();
     private final HashMap<String, Integer> mapOfConstants = new HashMap<>();
-    private final CPU cpu;
+    private final IMemoryCells memoryCells;
     private String lastLabel = "";
     private int address;
     private int errorCount;
@@ -61,8 +60,8 @@ public class Assembler {
     private boolean listHexCodes = true;
     private int expectArgCount = 0;
 
-    public Assembler(CPU cpu) {
-        this.cpu = cpu;
+    public Assembler(CPU memoryCells) {
+        this.memoryCells = memoryCells;
     }
 
     public void setListHexCodes(boolean listHexCodes) {
@@ -72,14 +71,14 @@ public class Assembler {
     public byte[] getMachineCode() {
         byte[] code = new byte[maxAddress];
         for(int i = 0; i < maxAddress; i++) {
-            code[i] = (byte)cpu.getMemoryCell(i).getSignedValue();
+            code[i] = (byte) memoryCells.getMemoryCell(i).getSignedValue();
         }
         return code;
     }
 
     public void loadMachineCode(byte[] code) {
         for(int i = 0; i < code.length; i++) {
-            cpu.memoryCells[i].set(code[i]);
+            memoryCells.getMemoryCell(i).set(code[i]);
         }
     }
 
@@ -138,8 +137,7 @@ public class Assembler {
         }
         str = str.trim();
         for(char ch : str.toCharArray()) {
-            int value = (int)ch;
-            address = emit(address, value);
+            address = emit(address, (int)ch);
         }
         address = emit(address, 0);
         return address;
@@ -262,7 +260,7 @@ public class Assembler {
                 System.out.printf(" >>> %02x: %02x\n", address, value);
                 System.out.flush();
             }
-            cpu.getMemoryCell(address).set(value);
+            memoryCells.getMemoryCell(address).set(value);
         }
         maxAddress = Math.max(maxAddress, ++address);
         return address;

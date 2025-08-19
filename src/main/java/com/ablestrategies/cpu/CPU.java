@@ -58,7 +58,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *     Register
  *       FlagRegister
  */
-public class CPU extends ExecutorTwoArgs implements IInterruptable {
+public class CPU extends ExecutorTwoArgs implements IInterruptable, IMemoryCells {
 
     private final LinkedBlockingQueue<Integer> interruptNumbers = new LinkedBlockingQueue<>();
     private int m1Interval = 0;

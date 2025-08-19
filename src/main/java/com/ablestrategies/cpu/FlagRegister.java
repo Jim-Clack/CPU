@@ -17,10 +17,11 @@ public class FlagRegister extends Register {
     }
 
     public void setBit(int bitNum, Bit bit) {
-        if(bitNum == Flags.IRQENAB.getBitNum()) {
-            // should we allow this?
-            // super.setBit(bitNum, bit);
-            // substrate.enableInterrupts = bit.getVal() > 0;
+        if(bitNum == FlagBit.IRQENAB.getBitNum()) {
+            //if(substrate != null) { // No, don't do this - danger
+            //    super.setBit(bitNum, bit);
+            //    substrate.enableInterrupts = bit.getVal() > 0;
+            //}
         } else {
             super.setBit(bitNum, bit);
         }
@@ -45,15 +46,14 @@ public class FlagRegister extends Register {
         if(register == this) {
             return;
         }
-      //  super.zero();
-        setBit(Flags.ZERO.getBitNum(), new Bit(register.isZero()));
-        setBit(Flags.CARRY.getBitNum(), new Bit(register.isCarry()));
-        setBit(Flags.SIGN.getBitNum(), new Bit(register.isNegative()));
+        setBit(FlagBit.ZERO.getBitNum(), new Bit(register.isZero()));
+        setBit(FlagBit.CARRY.getBitNum(), new Bit(register.isCarry()));
+        setBit(FlagBit.SIGN.getBitNum(), new Bit(register.isNegative()));
     }
 
     private void syncToSubstrate() {
         if(substrate != null) {
-            super.setBit(Flags.IRQENAB.getBitNum(), new Bit(substrate.enableInterrupts));
+            super.setBit(FlagBit.IRQENAB.getBitNum(), new Bit(substrate.enableInterrupts));
         }
     }
 

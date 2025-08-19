@@ -48,32 +48,32 @@ public class ExecutorOneArg extends ExecutorNoArg {
                 registers[IP].set(argument1);
                 break;
             case JZEIMM:
-                if(Flags.ZERO.getBit(getRegister(FLAGS))) {
+                if(FlagBit.ZERO.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
             case JGTIMM:
-                if(!Flags.SIGN.getBit(getRegister(FLAGS))) {
+                if(!FlagBit.SIGN.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
             case JLTIMM:
-                if(Flags.SIGN.getBit(getRegister(FLAGS))) {
+                if(FlagBit.SIGN.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
             case JNZEIMM:
-                if(!Flags.ZERO.getBit(getRegister(FLAGS))) {
+                if(!FlagBit.ZERO.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
             case JGTEIMM:
-                if(Flags.ZERO.getBit(getRegister(FLAGS)) || !Flags.SIGN.getBit(getRegister(FLAGS))) {
+                if(FlagBit.ZERO.getBit(getRegister(FLAGS)) || !FlagBit.SIGN.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
             case JLTEIMM:
-                if(Flags.ZERO.getBit(getRegister(FLAGS)) || Flags.SIGN.getBit(getRegister(FLAGS))) {
+                if(FlagBit.ZERO.getBit(getRegister(FLAGS)) || FlagBit.SIGN.getBit(getRegister(FLAGS))) {
                     registers[IP].set(argument1);
                 }
                 break;
