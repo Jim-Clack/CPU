@@ -43,6 +43,10 @@ public class ExecutorOneArg extends ExecutorNoArg {
             case JMPREG:
                 registers[IP].set(getRegister(argument1).getUnsignedValue());
                 break;
+            case CALLREG:
+                push(registers[IP]);
+                registers[IP].set(getRegister(argument1).getUnsignedValue());
+                break;
             case CALLIMM:
                 push(registers[IP]);
                 registers[IP].set(argument1);

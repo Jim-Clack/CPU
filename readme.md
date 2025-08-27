@@ -64,15 +64,14 @@ class MyDevice implements ICallableDevice {
     };
     simulator.setDaemon(true);
     simulator.start();
-    // 4. Run it...
     cpu.run(false);
   }
-  // 5. Handle console output from the CPU simulator
+  // Handle console output from the CPU simulator
   public int acceptOutputFromCPU(int value) {
     System.out.println("\n" + value);
     return 0; // no interrupt needed
   }
-  // 6. Here's the device driver source code
+  // 4. Here's the device driver source code
   static String driverSourceCode = """
            JMPIMM Begin:       # Skip over data area
   OutPort: EQU 10
@@ -180,6 +179,9 @@ Opcode Mnemonic #Args
  * (18, "JNZEIMM", 1),
  * (19, "JGTEIMM", 1),
  * (20, "JLTEIMM", 1),
+ * (21, "JCYIMM, 1),
+ * (22, "JNCYIMM, 1),
+ * (29, "CALLREG", 1),
  * (30, "CALLIMM", 1),
  * (31, "PUSHREG", 1),
  * (32, "POPREG", 1),
